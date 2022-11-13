@@ -10,7 +10,8 @@
 				</div>
 			</div>
 		</div>
-		<button type="default" @click="testData">通过方法跳转到about页面</button>
+		<!-- <button type="default" @click="testData">通过方法跳转到about页面</button> -->
+		
 		<uni-popup ref="getOpenIdErrPop" type="message">
 			<uni-popup-message type="success" message="获取openId成功" :duration="2000"></uni-popup-message>
 		</uni-popup>
@@ -29,10 +30,13 @@
 				activityAreaList: [], //活动专区列表
 			}
 		},
-		onLoad() {
+		onLoad(e) {
 			console.log("dddddddddddd");
-			console.log(this.currentOpenId);
-			if(!this.currentOpenId){
+			console.log(e);
+			if(e.shareFromOpenId){
+				//标识带有分享自某个openId 需记录上一级
+			}
+			if(!this.$store.state.openId){
 				this.getOpenId();
 			}
 			
