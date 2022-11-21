@@ -13,8 +13,12 @@
 				</div>
 			</div>
 		</div>
-		<button type="default" @click="getData">通过方法跳转到about页面</button>
-		
+		<!-- <button type="default" @click="getData">通过方法跳转到about页面</button> -->
+		<div class="flexRowCls" style="justify-content: flex-start;width: 90%;">
+			<div style="color: #3D3D3D;font-size: 16px;font-weight: 700;margin-top: 20px;">
+				今日优选
+			</div>
+		</div>
 		<uni-popup ref="getOpenIdErrPop" type="message">
 			<uni-popup-message type="success" message="获取openId成功" :duration="2000"></uni-popup-message>
 		</uni-popup>
@@ -45,7 +49,7 @@
 				// this.getOpenId();
 			}
 			
-			// this.getData();
+			this.getData();
 		},
 		created() {
 			
