@@ -140,6 +140,35 @@
 		font-size: 38rpx;
 		color: #808080;
 	}
-
+	
+	.flexRowCls{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	.flexRowAllWidthCls{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: conter;
+		width: 100%;
+	}
+	
+	.flexColCls{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	.flexColAllWidthCls{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+	}
 	/* #endif*/
 </style>

@@ -5,12 +5,15 @@
 		</div>
 		<div style="margin-top: 10px;border-radius: 10px;width: 90%;background-color: #fff;">
 			<div class="flexColCls" style="margin: 10px;">
-				<div style="color: #3D3D3D;font-size: 14px;font-weight: 700;width: 100%;text-align: left;">
+				<div style="color: #3D3D3D;font-size: 16px;font-weight: 700;width: 100%;text-align: left;">
 					今日活动专区
+				</div>
+				<div style="width: 100%;margin-top: 10px;">
+					<SwiperChannel :channelList="channelList" :col="2" style="width: 100%;"></SwiperChannel>
 				</div>
 			</div>
 		</div>
-		<!-- <button type="default" @click="testData">通过方法跳转到about页面</button> -->
+		<button type="default" @click="getData">通过方法跳转到about页面</button>
 		
 		<uni-popup ref="getOpenIdErrPop" type="message">
 			<uni-popup-message type="success" message="获取openId成功" :duration="2000"></uni-popup-message>
@@ -21,13 +24,15 @@
 <script>
 	import { mapActions } from 'vuex';
 	import { getChannelList } from '@/api/homeApi'
+	import SwiperChannel from './components/swiperMenu';
 	export default{
 		name: "HomeIndex",
+		components: {SwiperChannel},
 		data(){
 			return {
 				currentOpenId: this.$store.state.openId,
 				searchGoodsName: "",
-				activityAreaList: [], //活动专区列表
+				channelList: [], //活动专区列表
 			}
 		},
 		onLoad(e) {
@@ -37,7 +42,7 @@
 				//标识带有分享自某个openId 需记录上一级
 			}
 			if(!this.$store.state.openId){
-				this.getOpenId();
+				// this.getOpenId();
 			}
 			
 			// this.getData();
@@ -71,9 +76,28 @@
 				getChannelList(params).then(data => {
 					console.log('ddddddddddf');
 					console.log(data);
+					if(data.data.code == 0){
+						this.channelList = data.data.list;
+						uni.showToast({
+						    title: '获取频道成功',
+							icon: "success",
+						    duration: 2000
+						});
+					}else{
+						uni.showToast({
+						    title: '获取频道失败',
+							icon: 'none',
+						    duration: 2000
+						});
+					}
 				}).catch(err => {
 					console.log("eeeeeeeeeeeeeeeeeerr");
 					console.log(err);
+					uni.showToast({
+					    title: '获取频道失败',
+						icon: 'none',
+					    duration: 2000
+					});
 				})
 			},
 			change(){

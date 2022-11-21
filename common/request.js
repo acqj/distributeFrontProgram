@@ -1,12 +1,13 @@
 // 设置公共路径
-const baseUrl = "http://47.100.4.125:3000";
+const baseUrl = "https://192.168.0.15";
 
 //url, method, data, callback, hideLoading
 const request = (params) => {
 	console.log("paramsparams", params);
 	const headers = {
-		'content-type': 'application/json',
-		'x-requested-with': 'XMLHttpRequest'
+		'Content-Type': 'application/json',
+		// 'x-requested-with': 'XMLHttpRequest',
+		'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoiZ3VveHVhbiIsImNsaWVudFR5cGUiOjEsImlhdCI6MTY2OTAyMjU2MywiZXhwIjoxNjY5MDI5NzYzfQ.5YTQa5iOZP4Zi_yRL9xYwf_tI_I5d7nU4dOrhbfCBQg'
 	};
 	
 	// 如果调用接口不明确不显示 loading
@@ -27,8 +28,12 @@ const request = (params) => {
 			setTimeout(function() {
 				uni.hideLoading();
 			}, 200);
-			// let [error, res] = response;
-			resolve(response);
+			let [error, res] = response;
+			if(!error){
+				resolve(res.data)
+			}else{
+				reject(error);
+			}
 		}).catch(error => {
 			// let [err, res] = error;
 			reject(error)
