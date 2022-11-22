@@ -27,7 +27,8 @@
 
 <script>
 	import { mapActions } from 'vuex';
-	import { getChannelList } from '@/api/homeApi'
+	import { getChannelList } from '@/api/homeApi';
+	import { getUserByOpenId, createUser } from '@/api/userApi';
 	import SwiperChannel from './components/swiperMenu';
 	export default{
 		name: "HomeIndex",
@@ -37,6 +38,9 @@
 				currentOpenId: this.$store.state.openId,
 				searchGoodsName: "",
 				channelList: [], //活动专区列表
+				parentOpenId: "",
+				wxNick: "",
+				wxAvatar: ""
 			}
 		},
 		onLoad(e) {
@@ -44,9 +48,10 @@
 			console.log(e);
 			if(e.shareFromOpenId){
 				//标识带有分享自某个openId 需记录上一级
+				this.parentOpenId = e.shareFromOpenId;
 			}
 			if(!this.$store.state.openId){
-				// this.getOpenId();
+				this.getOpenId();
 			}
 			
 			this.getData();
@@ -112,19 +117,53 @@
 				// console.log('rrrrrrrresss', res);
 				if(res){
 					this.currentOpenId = res;
-					this.$refs.getOpenIdErrPop.open('top');
-					// console.log('fffffffffffffffffffff', uni.getUserProfile);
-					uni.showModal({
-						title:'授权',
-						content:"是否授权",
-						success: () => {
+					this.$store.commit("setopenId", this.currentOpenId);
+					if(this.parentOpenId == this.currentOpenId){
+						this.parentOpenId = "";
+					}
+					getUserByOpenId({openId: this.currentOpenId}).then(data => {
+						var resData = data.data;
+						if(resData.code == 0){
+							console.log("dddddddddddd");
+							// console.log(resData.userInfo);
+							// this.$store.state.setUserInfo(resData.userInfo);
+							// console.log(this.$store.state.currentUserInfo);
+							this.$store.commit('setUserInfo', resData.userInfo)
+							console.log(this.$store.state.currentUserInfo);
+						}else if(resData.code == -2){
+							//当前用户不存在用户表 需新增
+							this.getWXUserInfo();
+						}
+					}).catch(err => {
+						wx.showToast({
+								title: "获取用户信息失败",
+								icon: "error",
+								duration: 2000,
+							});
+					})
+					// this.$refs.getOpenIdErrPop.open('top');
+				}
+			},
+			getWXUserInfo(){
+				uni.showModal({
+					title:'授权',
+					content:"是否授权",
+					success: (resData) => {
+						console.log('resDataresDataresDataresData',resData);
+						if(resData.confirm){
 							uni.getUserProfile({
 								desc: "获取你的昵称、头像信息",//必填项，声明获取用户个人信息后的用途，不超过30个字符
 								success: (res) => {
+									console.log("resresresres",res);
 								  const userInfo = res.userInfo;
-								  // console.log("用户基本信息", userInfo);
+								  this.wxNick = userInfo.nickName;
+								  this.wxAvatar = userInfo.avatarUrl;
+								  this.createUserFunc(1);
 								},
 								fail: (res) => {
+									this.wxNick = "";
+									this.wxAvatar = "";
+									this.createUserFunc(0);
 									// console.log(res);
 								  //拒绝授权
 								  wx.showToast({
@@ -132,16 +171,48 @@
 									icon: "error",
 									duration: 2000,
 									});
-								  return;
+								 //  return;
 								},
 							});
+						}else{
+							this.wxNick = "";
+							this.wxAvatar = "";
+							this.createUserFunc(0);
 						}
-					})
+					}
+				})
+			},
+			createUserFunc(isAuthorization){
+				console.log('isAuthorizationisAuthorizationisAuthorization', isAuthorization);
+				var params = {
+					openId: this.currentOpenId,
+					wxNick: this.wxNick,
+					wxAvatar: this.wxAvatar,
+					parentOpenId: this.parentOpenId,
+					isAuthorization: isAuthorization
 				}
-				// console.log('666666666666666666666666',this.$store.state.openId);
-				// if(this.currentOpenId){
-				// 	this.$refs.getOpenIdErrPop.open('top');
-				// }
+				createUser(params).then(data => {
+					var resData = data.data;
+					if(resData.code == 0){
+						wx.showToast({
+							title: "新增用户成功",
+							icon: "success",
+							duration: 2000,
+						});
+					}else{
+						wx.showToast({
+							title: resData.msg,
+							icon: "error",
+							duration: 2000,
+						});
+					}
+				}).catch(err => {
+					wx.showToast({
+						title: "新增用户失败",
+						icon: "error",
+						duration: 2000,
+					})
+				})
 			}
 		}
 	}
