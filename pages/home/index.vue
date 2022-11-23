@@ -1,7 +1,7 @@
 <template>
 	<div class="flexColAllWidthCls">
 		<div style="margin: 10px 0;width: 90%;">
-			<uni-easyinput type="search" suffixIcon="search"  v-model="searchGoodsName" placeholder="搜索更多折扣" @iconClick="onClick"></uni-easyinput>
+			<uni-easyinput type="search" suffixIcon="search"  v-model="searchGoodsName" placeholder="搜索更多折扣" @iconClick="searchGoodsClick"></uni-easyinput>
 		</div>
 		<div style="margin-top: 10px;border-radius: 10px;width: 90%;background-color: #fff;">
 			<div class="flexColCls" style="margin: 10px;">
@@ -27,7 +27,7 @@
 
 <script>
 	import { mapActions } from 'vuex';
-	import { getChannelList } from '@/api/homeApi';
+	import { getChannelList } from '@/api/goodsApi';
 	import { getUserByOpenId, createUser } from '@/api/userApi';
 	import SwiperChannel from './components/swiperMenu';
 	export default{
@@ -56,33 +56,21 @@
 			
 			this.getData();
 		},
+		onShow() {
+			// this.searchGoodsName = "";
+		},
 		created() {
 			
 		},
 		methods: {
 			...mapActions(['getUserOpenId']),
-			testData(){
-				uni.request({
-					url:"https://weixin.fletu.com/api/TrainingInfo/Search",
-					method: "POST",
-					data:{
-						"TrainingType":this.currentType,"Limit":10,"Page":1
-					},
-					success: res => {
-							console.log("reeeeeeeeeees", res);
-						},
-					fail: () => {},
-					complete: () => {}
+			searchGoodsClick(){
+				uni.navigateTo({
+					url: '/pages/goods_list/index?searchGoodsName=' + this.searchGoodsName
 				})
 			},
 			getData(){
-				var params = {
-					pageNo: 1,
-					pageSize: 10,
-					stateFlag: 0,
-					keyword: ""
-				}
-				getChannelList(params).then(data => {
+				getChannelList().then(data => {
 					console.log('ddddddddddf');
 					console.log(data);
 					if(data.data.code == 0){

@@ -2,7 +2,7 @@
   <view style="width: 100%;">
     <swiper :indicator-dots="isShowDot && showDot" class="swiper" :style="{height:(180*col)+'rpx'}">
       <swiper-item v-for="(item, index) in listdivInfo" :key="index" class="swiper-item">
-        <view v-for="(child, code) in item" class="smallItem" :key="code" :style="{ width: width + '%;' }">
+        <view v-for="(child, code) in item" class="smallItem" :key="code" :style="{ width: width + '%;' }" @click="gotoGoodsListPage(child.id, child.channelName)">
 			<!-- <div class="flexColAllWidthCls" style="background-color: #FFEDEF;border-radius: 10rpx;">
 				<div style="color:#3d3d3d;margin: 10rpx 0;">
 					{{ child.channelName }}
@@ -84,14 +84,19 @@ export default {
         }
       });
       this.listdivInfo = arr;
-	  console.log("this.listdivInfothis.listdivInfothis.listdivInfo");
-	  console.log(this.listdivInfo);
       if (this.listdivInfo.length > 1) {
         this.showDot = true;
       } else {
         this.showDot = false;
       }
     },
+	gotoGoodsListPage(channelId, channelName){
+		console.log('===============================');
+		console.log(channelId);
+		uni.navigateTo({
+			url: '/pages/goods_list/index?channelId=' + channelId + '&channelName=' + channelName
+		})
+	}
   },
 };
 </script>

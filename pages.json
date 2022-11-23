@@ -23,6 +23,12 @@
 			"style": {
 				"navigationBarTitleText": "我的"
 			}
+		},
+		{
+			"path": "pages/goods_list/index",
+			"style": {
+				"navigationBarTitleText": "商品"
+			}
 		}
 	],
 	"globalStyle": {
