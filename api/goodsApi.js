@@ -25,3 +25,12 @@ export function getProductPwdForDy(data){
 		hideLoading: false
 	})
 }
+
+export function getBestGoodsList(data){
+	return request({
+		url: "/appletsGoods/getBestGoodsList",
+		method: "post",
+		data: data,
+		hideLoading: true
+	})
+}

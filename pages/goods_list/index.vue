@@ -39,10 +39,10 @@
 						</div>
 						<div class="flexRowAllWidthCls" style="justify-content: flex-start;margin-top: 10px;">
 							<div style="color: #3D3D3D;font-size: 12px;flex: 1;">
-								评分：{{item.score}} 佣金率:{{item.cosRatio}}
+								评分：{{item.score}} 佣金率：{{item.cosRatio}}
 							</div>
 							<div>
-								<button type="warn" size="mini">分享赚钱</button>
+								<button type="warn" size="mini" @click="shareBtnClick(item.id)">分享赚钱</button>
 							</div>
 						</div>
 					</div>
@@ -63,7 +63,8 @@
 				goodsList: [],
 				currentChannelId: "",
 				searchGoodsName: "",
-				styleStr: "margin-top: 10px;"
+				styleStr: "margin-top: 10px;",
+				currentOpenId: this.$store.state.openId
 			}
 		},
 		mounted() {
@@ -111,6 +112,58 @@
 			// var topDiv = this.$refs.topDivRef;
 		},
 		methods:{
+			shareBtnClick(productId){
+				if(this.currentOpenId && this.$store.state.currentUserInfo.id){
+					getProductPwdForDy({productId: productId, currentUserId: this.$store.state.currentUserInfo.id}).then(data => {
+						if(data.data.code == 0){
+							var productPwd = data.data.data.dy_password;
+							if(productPwd){
+								uni.setClipboardData({
+									data: productPwd,
+									success(res) {
+										wx.showToast({
+											title: "复制口令成功",
+											icon: "none",
+											duration: 2000
+										})
+									},
+									fail() {
+										wx.showToast({
+											title: "复制失败：" + productPwd,
+											icon: "none",
+											duration: 2000
+										})
+									}
+								})
+							}else{
+								wx.showToast({
+									title: "生成口令失败",
+									icon: "none",
+									duration: 2000
+								})
+							}
+						}else{
+							wx.showToast({
+								title: data.data.message,
+								icon: "none",
+								duration: 2000
+							})
+						}
+					}).catch(err => {
+						wx.showToast({
+							title: "获取商品口令失败，网络错误",
+							icon: "none",
+							duration: 2000
+						})
+					})
+				}else{
+					wx.showToast({
+						title: "当前用户信息有误",
+						icon: "none",
+						duration: 2000
+					})
+				}
+			},
 			getGoodsList(){
 				var params = {
 					channelId: this.currentChannelId,
@@ -139,17 +192,6 @@
 					})
 				})
 			},
-			getShareClick(productId){
-				getProductPwdForDy({productId: productId}).then(data => {
-					
-				}).catch(err => {
-					wx.showToast({
-						title: "获取商品口令失败",
-						icon: "none",
-						duration: 2000
-					})
-				})
-			}
 		}
 	}
 </script>

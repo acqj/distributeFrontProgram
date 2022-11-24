@@ -14,10 +14,45 @@
 			</div>
 		</div>
 		<!-- <button type="default" @click="getData">通过方法跳转到about页面</button> -->
-		<div class="flexRowCls" style="justify-content: flex-start;width: 90%;">
-			<div style="color: #3D3D3D;font-size: 16px;font-weight: 700;margin-top: 20px;">
+		<div class="flexColCls" style="width: 90%;">
+			<div style="color: #3D3D3D;font-size: 16px;font-weight: 700;margin-top: 20px;width: 100%;text-align: left;margin-bottom: 10px;">
 				今日优选
 			</div>
+			<div class="flexRowAllWidthCls" v-for="item in bestGoodsList" style="background-color: #fff;border-radius: 10px;margin-bottom: 10px;">
+				<div style="margin: 10px;">
+					<image :src="item.cover" style="width: 150rpx;height: 150rpx;"></image>
+				</div>
+				<div class="flexColCls" style="margin: 10px;margin-left: 0px;align-items: flex-start;">
+					<div style="color: #3d3d3d;font-size: 14px;font-weight: 700;">
+						{{item.title}}
+					</div>
+					<div class="flexRowAllWidthCls" style="justify-content: flex-start;margin-top: 10px;">
+						<div class="flexRowCls" style="justify-content: flex-start;flex:1;">
+							<div style="font-size: 14px;color: #666666;">
+								售价：
+							</div>
+							<div style="font-size: 16px;font-weight: 700;color: red;">
+								￥{{item.price}}
+							</div>
+						</div>
+						<div style="font-size: 14px;color: #666666;">
+							赚：
+						</div>
+						<div style="font-size: 16px;font-weight: 700;color: red;">
+							￥{{item.cosFee}}
+						</div>
+					</div>
+					<div class="flexRowAllWidthCls" style="justify-content: flex-start;margin-top: 10px;">
+						<div style="color: #3D3D3D;font-size: 12px;flex: 1;">
+							评分：{{item.score}} 佣金率：{{item.cosRatio}}
+						</div>
+						<div>
+							<button type="warn" size="mini" @click="shareBtnClick(item.id)">分享赚钱</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<uni-load-more :status="loadingStatus"></uni-load-more>
 		</div>
 		<uni-popup ref="getOpenIdErrPop" type="message">
 			<uni-popup-message type="success" message="获取openId成功" :duration="2000"></uni-popup-message>
@@ -27,7 +62,7 @@
 
 <script>
 	import { mapActions } from 'vuex';
-	import { getChannelList } from '@/api/goodsApi';
+	import { getChannelList, getBestGoodsList, getProductPwdForDy } from '@/api/goodsApi';
 	import { getUserByOpenId, createUser } from '@/api/userApi';
 	import SwiperChannel from './components/swiperMenu';
 	export default{
@@ -35,12 +70,16 @@
 		components: {SwiperChannel},
 		data(){
 			return {
+				loadingStatus: "more",
 				currentOpenId: this.$store.state.openId,
 				searchGoodsName: "",
 				channelList: [], //活动专区列表
 				parentOpenId: "",
 				wxNick: "",
-				wxAvatar: ""
+				wxAvatar: "",
+				pageNum: 1,
+				pageSize: 10,
+				bestGoodsList: []
 			}
 		},
 		onLoad(e) {
@@ -55,6 +94,14 @@
 			}
 			
 			this.getData();
+			this.getBeseGoodsListFunc();
+		},
+		onReachBottom(){
+			console.log('==============bottom');
+			this.loadingStatus = "loading";
+			setTimeout(() => {
+				this.getBeseGoodsListFunc();
+			}, 1000)
 		},
 		onShow() {
 			// this.searchGoodsName = "";
@@ -64,6 +111,90 @@
 		},
 		methods: {
 			...mapActions(['getUserOpenId']),
+			getBeseGoodsListFunc(){
+				getBestGoodsList({pageNum: this.pageNum, pageSize: this.pageSize}).then(data => {
+					console.log("ddddddddddddddddddddddddda");
+					console.log(data);
+					var resData = data.data;
+					if(resData.code == 0){
+						if(resData.list.length > 0){
+							this.pageNum += 1;
+							this.bestGoodsList = resData.list;
+							if(resData.list.length < (this.pageNum * this.pageSize)){
+								this.loadingStatus = "noMore";
+							}else{
+								this.loadingStatus = "more";
+							}
+						}else{
+							this.loadingStatus = "noMore";
+						}
+					}else{
+						wx.showToast({
+							title: resData.msg,
+							icon: "none",
+							duration: 2000
+						})
+					}
+				}).catch(err => {
+					wx.showToast({
+						title: "获取今日优选失败，网络错误",
+						icon: "none",
+						duration: 2000
+					})
+				})
+			},
+			shareBtnClick(productId){
+				if(this.currentOpenId && this.$store.state.currentUserInfo.id){
+					getProductPwdForDy({productId: productId, currentUserId: this.$store.state.currentUserInfo.id}).then(data => {
+						if(data.data.code == 0){
+							var productPwd = data.data.data.dy_password;
+							if(productPwd){
+								uni.setClipboardData({
+									data: productPwd,
+									success(res) {
+										wx.showToast({
+											title: "复制口令成功",
+											icon: "none",
+											duration: 2000
+										})
+									},
+									fail() {
+										wx.showToast({
+											title: "复制失败：" + productPwd,
+											icon: "none",
+											duration: 2000
+										})
+									}
+								})
+							}else{
+								wx.showToast({
+									title: "生成口令失败",
+									icon: "none",
+									duration: 2000
+								})
+							}
+						}else{
+							wx.showToast({
+								title: data.data.message,
+								icon: "none",
+								duration: 2000
+							})
+						}
+					}).catch(err => {
+						wx.showToast({
+							title: "获取商品口令失败，网络错误",
+							icon: "none",
+							duration: 2000
+						})
+					})
+				}else{
+					wx.showToast({
+						title: "当前用户信息有误",
+						icon: "none",
+						duration: 2000
+					})
+				}
+			},
 			searchGoodsClick(){
 				uni.navigateTo({
 					url: '/pages/goods_list/index?searchGoodsName=' + this.searchGoodsName
