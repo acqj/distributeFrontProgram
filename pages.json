@@ -22,13 +22,19 @@
 		{
 			"path": "pages/personal/index",
 			"style": {
-				"navigationBarTitleText": "我的"
+				"navigationBarTitleText": "个人中心"
 			}
 		},
 		{
 			"path": "pages/goods_list/index",
 			"style": {
 				"navigationBarTitleText": "商品"
+			}
+		},
+		{
+			"path": "pages/goods_detail/index",
+			"style": {
+				"navigationBarTitleText": "商品详情"
 			}
 		}
 	],

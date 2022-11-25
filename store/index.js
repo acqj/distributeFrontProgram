@@ -1,12 +1,14 @@
 // #ifndef VUE3
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { getUserByOpenId } from '@/api/userApi';
 Vue.use(Vuex)
 const store = new Vuex.Store({
 // #endif
 
 // #ifdef VUE3
-import { createStore } from 'vuex'
+import { createStore } from 'vuex';
+
 const store = createStore({
 // #endif
 	state: {
@@ -82,11 +84,14 @@ const store = createStore({
 		// lazy loading openId
 		getUserOpenId: async function({
 			commit,
-			state
+			state,
+			dispatch
 		}) {
-			return await new Promise((resolve, reject) => {
+			return await new Promise(async(resolve, reject) => {
 				if (state.openId) {
-					resolve(state.openId)
+					var resData = await dispatch('getUserInfo', state.openId)
+					// var resData = await this.getUserInfo(state.openId);
+					resolve({openId: state.openId, userCode: resData.code, userMsg: resData.msg});
 				} else {
 					uni.login({
 						provider: "weixin",
@@ -104,11 +109,13 @@ const store = createStore({
 								"&grant_type=authorization_code";
 							uni.request({
 								url: url, // 请求路径
-								success: (r) => {
+								success: async(r) => {
 								  console.log("r", r);
 								  console.info("用户的openId", r.data.openid);
 								  commit('setopenId', r.data.openid)
-								  resolve(r.data.openid)
+								 // var resData = await this.getUserInfo(r.data.openid);
+								 var resData = await dispatch('getUserInfo', state.openId)
+								 resolve({openId: state.openId, userCode: resData.code, userMsg: resData.msg});
 								},
 							  });
 							// commit('setopenId', openId)
@@ -120,6 +127,49 @@ const store = createStore({
 						}
 					})
 				}
+			})
+		},
+		getUserInfo({commit}, openId){
+			return new Promise((resolve, reject) => {
+				getUserByOpenId({openId: openId}).then(data => {
+					var resData = data.data;
+					if(resData.code == 0){
+						commit('setUserInfo', resData.userInfo);
+						resolve({ code: 0, msg: "获取成功"})
+					}else if(resData.code == -2){
+						//当前用户不存在用户表 需新增
+						// this.getWXUserInfo();
+						resolve({ code: -2, msg: "当前用户不存在用户表" })
+					}
+				}).catch(err => {
+					resolve({ code: -1, msg: "获取当前用户信息失败，网络错误" });
+				})
+			})
+		},
+		createUser({commit, dispatch}, openId, parentOpenId){
+			return new Promise((resolve, reject) => {
+				var params = {
+					openId: openId,
+					wxNick: "微信用户",
+					wxAvatar: "",
+					parentOpenId: parentOpenId,
+					isAuthorization: 0
+				}
+				createUser(params).then(async(data) => {
+					var resData = data.data;
+					if(resData.code == 0){
+						// await this.getUserInfo(openId);
+						var resData = await dispatch('getUserInfo', state.openId);
+						// if(resData.code != 0){
+							
+						// }
+						resolve({ code: 0 })
+					}else{
+						resolve({ code: -1 })
+					}
+				}).catch(err => {
+					resolve({ code: -2 })
+				})
 			})
 		},
 		getPhoneNumber: function({

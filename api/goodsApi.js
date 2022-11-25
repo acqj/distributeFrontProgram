@@ -34,3 +34,12 @@ export function getBestGoodsList(data){
 		hideLoading: true
 	})
 }
+
+export function getGoodsDetailById(data){
+	return request({
+		url: "/appletsGoods/getGoodsDetail",
+		method: "post",
+		data: data,
+		hideLoading: true
+	})
+}

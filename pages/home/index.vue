@@ -18,7 +18,7 @@
 			<div style="color: #3D3D3D;font-size: 16px;font-weight: 700;margin-top: 20px;width: 100%;text-align: left;margin-bottom: 10px;">
 				今日优选
 			</div>
-			<div class="flexRowAllWidthCls" v-for="item in bestGoodsList" style="background-color: #fff;border-radius: 10px;margin-bottom: 10px;">
+			<div @click="gotoGoodsDetail(item.id)" class="flexRowAllWidthCls" v-for="item in bestGoodsList" style="background-color: #fff;border-radius: 10px;margin-bottom: 10px;">
 				<div style="margin: 10px;">
 					<image :src="item.cover" style="width: 150rpx;height: 150rpx;"></image>
 				</div>
@@ -111,6 +111,12 @@
 		},
 		methods: {
 			...mapActions(['getUserOpenId']),
+			gotoGoodsDetail(productId){
+				console.log('pppppppppppppppppppppppppp', productId);
+				uni.navigateTo({
+					url:"/pages/goods_detail/index?productId=" + productId
+				})
+			},
 			getBeseGoodsListFunc(){
 				getBestGoodsList({pageNum: this.pageNum, pageSize: this.pageSize}).then(data => {
 					console.log("ddddddddddddddddddddddddda");
@@ -234,33 +240,46 @@
 			async getOpenId(){
 				var res = await this.getUserOpenId();
 				// console.log('rrrrrrrresss', res);
-				if(res){
-					this.currentOpenId = res;
-					this.$store.commit("setopenId", this.currentOpenId);
+				if(res.openId){
+					this.currentOpenId = res.openId;
+					// this.$store.commit("setopenId", this.currentOpenId);
 					if(this.parentOpenId == this.currentOpenId){
 						this.parentOpenId = "";
 					}
-					getUserByOpenId({openId: this.currentOpenId}).then(data => {
-						var resData = data.data;
-						if(resData.code == 0){
-							console.log("dddddddddddd");
-							// console.log(resData.userInfo);
-							// this.$store.state.setUserInfo(resData.userInfo);
-							// console.log(this.$store.state.currentUserInfo);
-							this.$store.commit('setUserInfo', resData.userInfo)
-							console.log(this.$store.state.currentUserInfo);
-						}else if(resData.code == -2){
+					if(res.userCode != 0){
+						if(res.userCode == -2){
 							//当前用户不存在用户表 需新增
 							this.getWXUserInfo();
+						}else{
+							wx.showToast({
+								title: res.userMsg,
+								icon: "none",
+								duration: 2000
+							})
 						}
-					}).catch(err => {
-						wx.showToast({
-								title: "获取用户信息失败",
-								icon: "error",
-								duration: 2000,
-							});
-					})
+					}
+					// getUserByOpenId({openId: this.currentOpenId}).then(data => {
+					// 	var resData = data.data;
+					// 	if(resData.code == 0){
+					// 		this.$store.commit('setUserInfo', resData.userInfo)
+					// 		console.log(this.$store.state.currentUserInfo);
+					// 	}else if(resData.code == -2){
+					// 		//当前用户不存在用户表 需新增
+					// 		this.getWXUserInfo();
+					// 	}
+					// }).catch(err => {
+					// 	wx.showToast({
+					// 			title: "获取用户信息失败",
+					// 			icon: "error",
+					// 			duration: 2000,
+					// 		});
+					// })
 					// this.$refs.getOpenIdErrPop.open('top');
+				}else{
+					wx.showToast({
+						title: "获取当前登录用户信息失败",
+						icon: "none"
+					})
 				}
 			},
 			getWXUserInfo(){

@@ -54,6 +54,7 @@
 
 <script>
 	import { getGoodsListByParams, getProductPwdForDy } from '@/api/goodsApi';
+	import { mapActions } from 'vuex';
 	export default{
 		name: "GoodsListPage",
 		data(){
@@ -64,7 +65,8 @@
 				currentChannelId: "",
 				searchGoodsName: "",
 				styleStr: "margin-top: 10px;",
-				currentOpenId: this.$store.state.openId
+				currentOpenId: this.$store.state.openId,
+				parentOpenId: ""
 			}
 		},
 		mounted() {
@@ -76,15 +78,10 @@
 					scrollOffset:true //是否返回节点滚动信息{scrollLeft,scrollTop}
 				},(res) => {
 					//res 可以返回第一个参数对象中指定为true的相关信息
-					console.log('dddddddddddddddd1');
-					console.log(res);
 					if(res.height){
-						console.log("ddddddddddd2");
 						var allHeight = wx.getSystemInfoSync().windowHeight;
 						var bottomDivHeight = allHeight - res.height - 20;
 						this.styleStr = "margin-top: 10px;height:" + bottomDivHeight + "px;";
-						
-						console.log(this.styleStr);
 					}
 				}).exec(function(){
 					//上述节点信息获取成功后执行的回调函数
@@ -92,6 +89,11 @@
 			}
 		},
 		onLoad(e) {
+			if(e.shareFromOpenId){
+				//标识带有分享自某个openId 需记录上一级
+				this.parentOpenId = e.shareFromOpenId;
+			}
+			
 			if(e.channelId){
 				this.isShowChannelName = true;
 				this.currentChannelId = e.channelId;
@@ -112,57 +114,89 @@
 			// var topDiv = this.$refs.topDivRef;
 		},
 		methods:{
-			shareBtnClick(productId){
+			...mapActions(['getUserOpenId', 'createUser']),
+			async shareBtnClick(productId){
 				if(this.currentOpenId && this.$store.state.currentUserInfo.id){
-					getProductPwdForDy({productId: productId, currentUserId: this.$store.state.currentUserInfo.id}).then(data => {
-						if(data.data.code == 0){
-							var productPwd = data.data.data.dy_password;
-							if(productPwd){
-								uni.setClipboardData({
-									data: productPwd,
-									success(res) {
-										wx.showToast({
-											title: "复制口令成功",
-											icon: "none",
-											duration: 2000
-										})
-									},
-									fail() {
-										wx.showToast({
-											title: "复制失败：" + productPwd,
-											icon: "none",
-											duration: 2000
-										})
-									}
-								})
+					this.getProductPwd(productId);
+				}else{
+					var res = await this.getUserOpenId();
+					if(res.openId){
+						if(res.userCode == 0){
+							this.getProductPwd(productId);
+						}else if(res.userCode == -2){
+							//当前用户表不存在该用户 自动注册
+							if(this.parentOpenId == res.openId){
+								this.parentOpenId = "";
+							}
+							var resUserData = await this.createUser(res.openId, this.parentOpenId);
+							if(resUserData.code == 0){
+								this.getProductPwd(productId);
 							}else{
 								wx.showToast({
-									title: "生成口令失败",
+									title: "获取用户信息失败",
 									icon: "none",
 									duration: 2000
 								})
 							}
 						}else{
 							wx.showToast({
-								title: data.data.message,
+								title: "当前用户信息有误，登陆失败",
 								icon: "none",
 								duration: 2000
 							})
 						}
-					}).catch(err => {
+					}else{
 						wx.showToast({
-							title: "获取商品口令失败，网络错误",
+							title: "当前用户信息有误，登陆失败",
 							icon: "none",
 							duration: 2000
 						})
-					})
-				}else{
+					}
+				}
+			},
+			getProductPwd(productId){
+				getProductPwdForDy({productId: productId, currentUserId: this.$store.state.currentUserInfo.id}).then(data => {
+					if(data.data.code == 0){
+						var productPwd = data.data.data.dy_password;
+						if(productPwd){
+							uni.setClipboardData({
+								data: productPwd,
+								success(res) {
+									wx.showToast({
+										title: "复制口令成功",
+										icon: "none",
+										duration: 2000
+									})
+								},
+								fail() {
+									wx.showToast({
+										title: "复制失败：" + productPwd,
+										icon: "none",
+										duration: 2000
+									})
+								}
+							})
+						}else{
+							wx.showToast({
+								title: "生成口令失败",
+								icon: "none",
+								duration: 2000
+							})
+						}
+					}else{
+						wx.showToast({
+							title: data.data.message,
+							icon: "none",
+							duration: 2000
+						})
+					}
+				}).catch(err => {
 					wx.showToast({
-						title: "当前用户信息有误",
+						title: "获取商品口令失败，网络错误",
 						icon: "none",
 						duration: 2000
 					})
-				}
+				})
 			},
 			getGoodsList(){
 				var params = {
