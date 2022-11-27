@@ -3,10 +3,10 @@
 		<scroll-view scroll-y="true" style="height: 85%;">
 			<div class="flexColAllWidthCls">
 				<div class="flexColCls" style="width: 90%;background-color: #fff;border-radius: 20px;">
-					<div class="flexColCls" style="margin: 20px 0;width: 90%;">
-						<swiper :indicator-dots="true" style="height: 150px;width: 100%;">
+					<div id="imgTopDiv" class="flexColCls" style="margin: 20px 0;width: 90%;">
+						<swiper :indicator-dots="true" :style="swiperStyleStr">
 							<swiper-item v-for="item in goodsObj.imgs" :key="item">
-								<image :src="item" style="height: 150px;width: 100%;"></image>
+								<image :src="item" style="width: 100%;"></image>
 							</swiper-item>
 						</swiper>
 						<div style="color: #3d3d3d;font-size: 14px;font-weight: 700;margin-top: 10px;">
@@ -65,7 +65,7 @@
 		</scroll-view>
 		<div class="flexRowAllWidthCls" style="margin-top: 5%;height: 8%;background-color: #fff;justify-content: flex-end;">
 			<div style="margin-right: 20px;">
-				<button type="warn" @click="shareBtnClick(goodsObj.id)">分享赚钱</button>
+				<button size="mini" type="warn" @click="shareBtnClick(goodsObj.id)">分享赚钱</button>
 			</div>
 		</div>
 	</div>
@@ -95,7 +95,29 @@
 					viewNum: "", //近30天浏览量
 					kolNum: "", //近30天推广人数
 					cover: "", //商品展示大图
-				}
+				},
+				swiperStyleStr: "width:100%;"
+			}
+		},
+		mounted() {
+			var topDiv = uni.createSelectorQuery().select("#imgTopDiv");
+			if(topDiv){
+				topDiv.fields({
+					rect:true,   //是否返回节点布局位置信息{left,top,right,bottom}
+					size:true,  //是否返回节点尺寸信息{width，height}
+					scrollOffset:true //是否返回节点滚动信息{scrollLeft,scrollTop}
+				},(res) => {
+					//res 可以返回第一个参数对象中指定为true的相关信息
+					console.log("resresresres");
+					console.log(res);
+					if(res.width){
+						// var allHeight = wx.getSystemInfoSync().windowHeight;
+						// var bottomDivHeight = allHeight - res.height - 20;
+						this.swiperStyleStr = "width: 100%;height:" + res.width + "px;";
+					}
+				}).exec(function(){
+					//上述节点信息获取成功后执行的回调函数
+				})
 			}
 		},
 		onLoad(e) {

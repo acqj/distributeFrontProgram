@@ -17,3 +17,12 @@ export function createUser(data){
 		hideLoading: false
 	})
 }
+
+export function getMyRelation(data){
+	return request({
+		url: "/appletsUser/getMyRelation",
+		method: "post",
+		data: data,
+		hideLoading: false
+	})
+}

@@ -47,7 +47,7 @@
 							评分：{{item.score}} 佣金率：{{item.cosRatio}}
 						</div>
 						<div>
-							<button type="warn" size="mini" @click="shareBtnClick(item.id)">分享赚钱</button>
+							<button type="warn" size="mini" @click.stop="shareBtnClick(item.id)">分享赚钱</button>
 						</div>
 					</div>
 				</div>
