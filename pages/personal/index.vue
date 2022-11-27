@@ -1,8 +1,29 @@
 <template>
 	<div class="flexColAllWidthCls" style="justify-content: flex-start;">
-		<image :src="avatar"></image>
+		<image :src="avatar" style="height: 80px;"></image>
 		<div style="margin-top: 10px;color: #3d3d3d;font-size: 14px;">
 			{{nickName}}
+		</div>
+		<div class="flexRowAllWidthCls" style="margin-top: 10px;">
+			<div class="flexRowCls" style="color: #FF8F1F;">
+				<uni-icons type="star-filled" size="15" color="#FF8F1F"></uni-icons>
+				<div style="margin-left: 2px;">一级代理</div>
+			</div>
+			<div class="flexRowCls" style="margin-left: 10px;" v-if="!currentUserInfo.hasChildren">
+				<uni-icons type="star-filled" size="15" color="silver"></uni-icons>
+				<div style="margin-left: 2px;color:silver;">二级代理</div>
+			</div>
+		</div>
+		<div class="flexRowCls" style="background-color: #fff;border-radius: 10px;width: 80%;margin-top: 20px;">
+			<div class="flexRowCls" style="width: 85%;margin: 10px 0;">
+				<div style="color: #3d3d3d;font-size: 14px;flex: 1;">
+					我的销售体系
+				</div>
+				<div>
+					<uni-icons type="right" size="20"></uni-icons>
+				</div>
+			</div>
+			
 		</div>
 	</div>
 </template>

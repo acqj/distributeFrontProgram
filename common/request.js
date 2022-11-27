@@ -1,5 +1,5 @@
 // 设置公共路径
-const baseUrl = "https://192.168.0.15";
+const baseUrl = "https://192.168.1.11";
 
 //url, method, data, callback, hideLoading
 const request = (params) => {
