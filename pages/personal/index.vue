@@ -12,7 +12,7 @@
 				<uni-icons type="star-filled" size="15" color="#FF8F1F"></uni-icons>
 				<div style="margin-left: 2px;">一级代理</div>
 			</div>
-			<div class="flexRowCls" style="margin-left: 10px;" v-if="!currentUserInfo.hasChildren">
+			<div class="flexRowCls" style="margin-left: 10px;" v-if="currentUserInfo.parent_openid != null || currentUserInfo.parent_openid != ''">
 				<uni-icons type="star-filled" size="15" color="silver"></uni-icons>
 				<div style="margin-left: 2px;color:silver;">二级代理</div>
 			</div>
@@ -186,7 +186,7 @@
 			gotoRelation(){
 				if(this.currentOpenId){
 					uni.navigateTo({
-						url:"/pages/relation/index?parentOpenId="+this.parentOpenId
+						url:"/pages/relation/index?parentOpenId=" + this.currentUserInfo.parent_openid
 					})
 				}else{
 					wx.showToast({
@@ -201,8 +201,8 @@
 				if(this.currentOpenId && this.currentUserInfo.id){
 					if(this.currentUserInfo.is_wx_authorization && this.currentUserInfo.is_wx_authorization != 0){
 						//已授权获取用户名以及头像等详细信息
-						this.nickName = currentUserInfo.wx_nick;
-						this.avatar = currentUserInfo.wx_avatar;
+						this.nickName = this.currentUserInfo.wx_nick;
+						this.avatar = this.currentUserInfo.wx_avatar;
 					}else{
 						if(!this.currentUserInfo.wx_nick)
 						{

@@ -9,8 +9,9 @@
 			<view v-if="loading" class="uni-table-mask" :class="{ 'empty-border': border }"><div class="uni-table--loader"></div></view>
 		</table>
 		<!-- #endif -->
-		<!-- #ifndef H5 -->
-		<view class="uni-table" :style="{ 'min-width': minWidth + 'px' }" :class="{ 'table--stripe': stripe }">
+		<!-- #ifndef H5-->
+		<!-- :style="{ 'min-width': minWidth + 'px' }" -->
+		<view class="uni-table" :class="{ 'table--stripe': stripe }">
 			<slot></slot>
 			<view v-if="noData" class="uni-table-loading">
 				<view class="uni-table-text" :class="{ 'empty-border': border }">{{ emptyText }}</view>
