@@ -26,3 +26,21 @@ export function getMyRelation(data){
 		hideLoading: false
 	})
 }
+
+export function createFeedBack(data){
+	return request({
+		url: "/appletsUser/createFeedBack",
+		method: "post",
+		data: data,
+		hideLoading: false
+	})
+}
+
+export function updateUserInfo(data){
+	return request({
+		url: "/appletsUser/updateUserInfo",
+		method: "post",
+		data: data,
+		hideLoading: false
+	})
+}

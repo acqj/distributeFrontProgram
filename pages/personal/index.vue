@@ -1,6 +1,9 @@
 <template>
 	<div class="flexColAllWidthCls" style="justify-content: flex-start;">
-		<image :src="avatar" style="height: 80px;"></image>
+		<div style="position: relative;">
+			<image :src="avatar" style="height: 80px;width: 80px;border-radius: 40px;"></image>
+			<div v-if="!isAuth" @click="getAuthClick" size="mini" style="text-align: center;width: 80px;position: absolute;top: 35%;background-color: limegreen;color: #fff;">点击授权</div>
+		</div>
 		<div style="margin-top: 10px;color: #3d3d3d;font-size: 14px;">
 			{{nickName}}
 		</div>
@@ -15,9 +18,34 @@
 			</div>
 		</div>
 		<div class="flexRowCls" style="background-color: #fff;border-radius: 10px;width: 80%;margin-top: 20px;">
-			<div class="flexRowCls" style="width: 85%;margin: 10px 0;">
+			<div class="flexRowCls" style="width: 85%;margin: 10px 0;" @click="gotoRelation">
 				<div style="color: #3d3d3d;font-size: 14px;flex: 1;">
 					我的销售体系
+				</div>
+				<div>
+					<uni-icons type="right" size="20"></uni-icons>
+				</div>
+			</div>
+			
+		</div>
+		<div class="flexRowAllWidthCls" style="margin-top: 20px;">
+			<button type="warn" style="width: 80%;" data-name="shareBtn" open-type="share">发展销售队伍</button>
+		</div>
+		<div class="flexRowCls" style="background-color: #fff;border-radius: 10px;width: 80%;margin-top: 300px;">
+			<div class="flexRowCls" style="width: 85%;margin: 10px 0;" @click="gotoFeedback">
+				<div style="color: #3d3d3d;font-size: 14px;flex: 1;">
+					意见反馈
+				</div>
+				<div>
+					<uni-icons type="right" size="20"></uni-icons>
+				</div>
+			</div>
+			
+		</div>
+		<div class="flexRowCls" style="background-color: #fff;border-radius: 10px;width: 80%;margin-top: 10px;">
+			<div class="flexRowCls" style="width: 85%;margin: 10px 0;" @click="gotoRelation">
+				<div style="color: #3d3d3d;font-size: 14px;flex: 1;">
+					使用说明
 				</div>
 				<div>
 					<uni-icons type="right" size="20"></uni-icons>
@@ -29,12 +57,13 @@
 </template>
 
 <script>
-	import { getUserByOpenId } from '@/api/userApi';
+	import { getUserByOpenId, updateUserInfo } from '@/api/userApi';
 	import { mapActions } from 'vuex';
 	export default{
 		name: "PersonalIndex",
 		data(){
 			return{
+				isAuth: false,
 				nickName: "",
 				avatar: "",
 				currentOpenId: this.$store.state.openId,
@@ -60,15 +89,133 @@
 		},
 		methods: {
 			...mapActions(['getUserOpenId', 'createUser']),
+			getAuthClick(){
+				uni.showModal({
+					title:'授权',
+					content:"是否授权",
+					success: (resData) => {
+						if(resData.confirm){
+							wx.getSetting({
+								success:(res) => {
+									console.log('ccccccccccccccccc',res);
+									if (res.authSetting['scope.userInfo']) {
+										wx.getUserProfile({
+											desc: "获取你的昵称、头像信息",//必填项，声明获取用户个人信息后的用途，不超过30个字符
+											success: (res) => {
+												// uni.login({
+												// 	provider: "weixin",
+												// 	success: (data) => {
+												// 		console.log("resresresres",data);
+												// 	}
+												// })
+												// console.log('rrrrrrrrrrrrr',res);
+											  const userInfo = res.userInfo;
+											  this.nickName = userInfo.nickName;
+											  this.avatar = userInfo.avatarUrl;
+											  // this.isAuth = true;
+											  this.updateUser();//授权成功更新用户表
+											},
+											fail: (res) => {
+												// this.nickName = "";
+												// this.avatar = "";
+											  //拒绝授权
+											  wx.showToast({
+												title: "获取失败",
+												icon: "error",
+												duration: 2000,
+												});
+											 //  return;
+											},
+										});
+									}
+								}
+							})
+						}else{
+							// this.nickName = "";
+							// this.avatar = "";
+							// this.createUserFunc(0);
+						}						
+					}
+				})
+			},
+			updateUser(){
+				var params = {
+					openId: this.currentOpenId,
+					nickName: this.nickName,
+					avatar: this.avatar
+				}
+				updateUserInfo(params).then(data => {
+					var resData = data.data;
+					if(resData.code == 0){
+						this.isAuth = true;
+					}else{
+						wx.showToast({
+							title: resData.msg,
+							icon: "none",
+							duration: 2000
+						})
+					}
+				}).catch(err => {
+					wx.showToast({
+						title: "更新用户信息失败，网络错误",
+						icon: "none",
+						duration: 2000
+					})
+				})
+			},
+			gotoFeedback(){
+				uni.navigateTo({
+					url: "/pages/feed_back/index"
+				})
+			},
+			// onShareClick(){
+			// 	wx.showShareMenu({
+			// 		withShareTicket:true,
+			// 		//设置下方的Menus菜单，才能够让发送给朋友与分享到朋友圈两个按钮可以点击
+			// 		menus:["shareAppMessage","shareTimeline"],
+			// 		success: (res) => {
+			// 			console.log('rrrrrrrrrrrrrrrrrrrrres');
+			// 			console.log(res);
+			// 		},
+			// 		fail:(err) => {
+			// 			console.log('errrrrrrrrrr');
+			// 			console.log(err);
+			// 		}
+			// 	})
+			// },
+			gotoRelation(){
+				if(this.currentOpenId){
+					uni.navigateTo({
+						url:"/pages/relation/index?parentOpenId="+this.parentOpenId
+					})
+				}else{
+					wx.showToast({
+						title: "获取当前用户openId失败",
+						icon: "none",
+						duration: 2000
+					})
+				}
+			},
 			async getUserInfo(){
+				console.log(this.currentUserInfo);
 				if(this.currentOpenId && this.currentUserInfo.id){
 					if(this.currentUserInfo.is_wx_authorization && this.currentUserInfo.is_wx_authorization != 0){
 						//已授权获取用户名以及头像等详细信息
 						this.nickName = currentUserInfo.wx_nick;
 						this.avatar = currentUserInfo.wx_avatar;
 					}else{
-						this.nickName = "微信用户";
-						this.avatar = "";
+						if(!this.currentUserInfo.wx_nick)
+						{
+							this.nickName = "微信用户";
+						}
+						if(!this.currentUserInfo.wx_avatar){
+							this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
+						}
+					}
+					if(this.currentUserInfo.is_wx_authorization != 1){
+						this.isAuth = false;
+					}else{
+						this.isAuth = true;
 					}
 				}else{
 					var res = await this.getUserOpenId();
@@ -79,10 +226,19 @@
 								this.nickName = this.currentUserInfo.wx_nick;
 								this.avatar = this.currentUserInfo.wx_avatar;
 							}else{
-								this.nickName = "微信用户";
-								this.avatar = "";
+								if(!this.currentUserInfo.wx_nick)
+								{
+									this.nickName = "微信用户";
+								}
+								if(!this.currentUserInfo.wx_avatar){
+									this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
+								}
 							}
-							// this.getProductPwd(productId);
+							if(this.currentUserInfo.is_wx_authorization != 1){
+								this.isAuth = false;
+							}else{
+								this.isAuth = true;
+							}
 						}else if(res.userCode == -2){
 							//当前用户表不存在该用户 自动注册
 							if(this.parentOpenId == res.openId){
@@ -95,8 +251,18 @@
 									this.nickName = this.currentUserInfo.wx_nick;
 									this.avatar = this.currentUserInfo.wx_avatar;
 								}else{
-									this.nickName = "微信用户";
-									this.avatar = "";
+									if(!this.currentUserInfo.wx_nick)
+									{
+										this.nickName = "微信用户";
+									}
+									if(!this.currentUserInfo.wx_avatar){
+										this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
+									}
+								}
+								if(this.currentUserInfo.is_wx_authorization != 1){
+									this.isAuth = false;
+								}else{
+									this.isAuth = true;
 								}
 							}else{
 								wx.showToast({

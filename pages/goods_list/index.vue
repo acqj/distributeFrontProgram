@@ -17,7 +17,7 @@
 					<div style="margin: 10px;">
 						<image :src="item.cover" style="width: 150rpx;height: 150rpx;"></image>
 					</div>
-					<div class="flexColCls" style="margin: 10px;margin-left: 0px;align-items: flex-start;">
+					<div @click="gotoGoodsDetail(item.id)" class="flexColCls" style="margin: 10px;margin-left: 0px;align-items: flex-start;">
 						<div style="color: #3d3d3d;font-size: 14px;font-weight: 700;">
 							{{item.title}}
 						</div>
@@ -42,7 +42,7 @@
 								评分：{{item.score}} 佣金率：{{item.cosRatio}}
 							</div>
 							<div>
-								<button type="warn" size="mini" @click="shareBtnClick(item.id)">分享赚钱</button>
+								<button type="warn" size="mini" @click.stop="shareBtnClick(item.id)">分享赚钱</button>
 							</div>
 						</div>
 					</div>
@@ -115,6 +115,12 @@
 		},
 		methods:{
 			...mapActions(['getUserOpenId', 'createUser']),
+			gotoGoodsDetail(productId){
+				console.log('pppppppppppppppppppppppppp', productId);
+				uni.navigateTo({
+					url:"/pages/goods_detail/index?productId=" + productId
+				})
+			},
 			async shareBtnClick(productId){
 				if(this.currentOpenId && this.$store.state.currentUserInfo.id){
 					this.getProductPwd(productId);

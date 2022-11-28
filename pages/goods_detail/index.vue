@@ -6,7 +6,7 @@
 					<div id="imgTopDiv" class="flexColCls" style="margin: 20px 0;width: 90%;">
 						<swiper :indicator-dots="true" :style="swiperStyleStr">
 							<swiper-item v-for="item in goodsObj.imgs" :key="item">
-								<image :src="item" style="width: 100%;"></image>
+								<image :src="item" style="width: 100%;height: 90%;"></image>
 							</swiper-item>
 						</swiper>
 						<div style="color: #3d3d3d;font-size: 14px;font-weight: 700;margin-top: 10px;">

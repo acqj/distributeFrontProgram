@@ -36,6 +36,18 @@
 			"style": {
 				"navigationBarTitleText": "商品详情"
 			}
+		},
+		{
+			"path": "pages/relation/index",
+			"style": {
+				"navigationBarTitleText": "我的销售体系"
+			}
+		},
+		{
+			"path": "pages/feed_back/index",
+			"style": {
+				"navigationBarTitleText": "意见反馈"
+			}
 		}
 	],
 	"globalStyle": {
