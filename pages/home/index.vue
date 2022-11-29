@@ -18,11 +18,11 @@
 			<div style="color: #3D3D3D;font-size: 16px;font-weight: 700;margin-top: 20px;width: 100%;text-align: left;margin-bottom: 10px;">
 				今日优选
 			</div>
-			<div @click="gotoGoodsDetail(item.id)" class="flexRowAllWidthCls" v-for="item in bestGoodsList" style="background-color: #fff;border-radius: 10px;margin-bottom: 10px;">
+			<div @click="gotoGoodsDetail(item.id)" class="flexRowAllWidthCls" v-for="item in bestGoodsList" style="background-color: #fff;border-radius: 10px;margin-bottom: 10px;justify-content: flex-start;">
 				<div style="margin: 10px;">
 					<image :src="item.cover" style="width: 150rpx;height: 150rpx;"></image>
 				</div>
-				<div class="flexColCls" style="margin: 10px;margin-left: 0px;align-items: flex-start;">
+				<div class="flexColCls" style="margin: 10px;margin-left: 0px;align-items: flex-start;flex: 1;">
 					<div style="color: #3d3d3d;font-size: 14px;font-weight: 700;">
 						{{item.title}}
 					</div>
@@ -104,7 +104,10 @@
 			}, 1000)
 		},
 		onShow() {
-			// this.searchGoodsName = "";
+			console.log('oooooooooooooooshow');
+			if(!this.$store.state.openId){
+				this.getOpenId();
+			}
 		},
 		created() {
 			

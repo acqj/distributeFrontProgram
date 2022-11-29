@@ -13,11 +13,11 @@
 			</div>
 			<!-- <div class="flexColAllWidthCls" :style="styleStr"> -->
 			<scroll-view :scroll-top="scrollTop" scroll-y="true" :style="styleStr">
-				<div class="flexRowAllWidthCls" v-for="item in goodsList" :key="item.id" style="background-color: #fff;border-radius: 10px;margin-bottom: 10px;">
+				<div class="flexRowAllWidthCls" v-for="item in goodsList" :key="item.id" style="justify-content: flex-start;background-color: #fff;border-radius: 10px;margin-bottom: 10px;">
 					<div style="margin: 10px;">
 						<image :src="item.cover" style="width: 150rpx;height: 150rpx;"></image>
 					</div>
-					<div @click="gotoGoodsDetail(item.id)" class="flexColCls" style="margin: 10px;margin-left: 0px;align-items: flex-start;">
+					<div @click="gotoGoodsDetail(item.id)" class="flexColCls" style="flex: 1;margin: 10px;margin-left: 0px;align-items: flex-start;">
 						<div style="color: #3d3d3d;font-size: 14px;font-weight: 700;">
 							{{item.title}}
 						</div>

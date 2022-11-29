@@ -40,10 +40,9 @@
 					<uni-icons type="right" size="20"></uni-icons>
 				</div>
 			</div>
-			
 		</div>
 		<div class="flexRowCls" style="background-color: #fff;border-radius: 10px;width: 80%;margin-top: 10px;">
-			<div class="flexRowCls" style="width: 85%;margin: 10px 0;" @click="gotoRelation">
+			<div class="flexRowCls" style="width: 85%;margin: 10px 0;">
 				<div style="color: #3d3d3d;font-size: 14px;flex: 1;">
 					使用说明
 				</div>
@@ -89,7 +88,13 @@
 		},
 		methods: {
 			...mapActions(['getUserOpenId', 'createUser']),
-			getAuthClick(){
+			async getAuthClick(){
+				if(!this.currentOpenId){
+					var res = await this.getUserOpenId();
+					if(res.openId){
+						this.currentOpenId = res.openId;
+					}
+				}
 				uni.showModal({
 					title:'授权',
 					content:"是否授权",

@@ -48,6 +48,12 @@
 			"style": {
 				"navigationBarTitleText": "意见反馈"
 			}
+		},
+		{
+			"path": "pages/commission/index",
+			"style": {
+				"navigationBarTitleText": "佣金"
+			}
 		}
 	],
 	"globalStyle": {
@@ -79,6 +85,12 @@
 				"selectedIconPath": "static/componentHL.png",
 				"text": "首页"
 			},
+			{
+					"pagePath": "pages/commission/index",
+					"iconPath": "static/component.png",
+					"selectedIconPath": "static/componentHL.png",
+					"text": "佣金"
+				},
 			{
 				"pagePath": "pages/personal/index",
 				"iconPath": "static/api.png",
