@@ -76,25 +76,25 @@
 	},
 	"tabBar": {
 		"color": "#7A7E83",
-		"selectedColor": "#007AFF",
+		"selectedColor": "#3d3d3d", //007AFF
 		"borderStyle": "black",
 		"backgroundColor": "#F8F8F8",
 		"list": [{
 				"pagePath": "pages/home/index",
-				"iconPath": "static/component.png",
-				"selectedIconPath": "static/componentHL.png",
+				"iconPath": "static/tab-icon/home.png",
+				"selectedIconPath": "static/tab-icon/selectedHome.png",
 				"text": "首页"
 			},
 			{
 					"pagePath": "pages/commission/index",
-					"iconPath": "static/component.png",
-					"selectedIconPath": "static/componentHL.png",
+					"iconPath": "static/tab-icon/commission.png",
+					"selectedIconPath": "static/tab-icon/selectedCommission.png",
 					"text": "佣金"
 				},
 			{
 				"pagePath": "pages/personal/index",
-				"iconPath": "static/api.png",
-				"selectedIconPath": "static/apiHL.png",
+				"iconPath": "static/tab-icon/personal.png",
+				"selectedIconPath": "static/tab-icon/selectedPersonal.png",
 				"text": "我的"
 			}
 		]
