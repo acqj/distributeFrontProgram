@@ -42,7 +42,7 @@
 			</div>
 		</div>
 		<div class="flexRowCls" style="background-color: #fff;border-radius: 10px;width: 80%;margin-top: 10px;">
-			<div class="flexRowCls" style="width: 85%;margin: 10px 0;">
+			<div class="flexRowCls" style="width: 85%;margin: 10px 0;" @click="gotoHandbook">
 				<div style="color: #3d3d3d;font-size: 14px;flex: 1;">
 					使用说明
 				</div>
@@ -171,6 +171,11 @@
 			gotoFeedback(){
 				uni.navigateTo({
 					url: "/pages/feed_back/index"
+				})
+			},
+			gotoHandbook() {
+				uni.navigateTo({
+					url: "/pages/handbook/index"
 				})
 			},
 			// onShareClick(){

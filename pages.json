@@ -54,6 +54,12 @@
 			"style": {
 				"navigationBarTitleText": "佣金"
 			}
+		},
+		{
+			"path": "pages/handbook/index",
+			"style": {
+				"navigationBarTitleText": "使用说明"
+			}
 		}
 	],
 	"globalStyle": {
