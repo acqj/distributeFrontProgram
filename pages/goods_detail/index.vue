@@ -56,8 +56,8 @@
 						<div style="margin-top: 10px;">
 							近30天推广总达人数：{{goodsObj.kolNum}}
 						</div>
-						<div style="width: 100%;text-align: center;margin-top: 10px;">
-							<image :src="goodsObj.cover" style="width: 100%;"></image>
+						<div :style="bottomImgStyle">
+							<image :src="goodsObj.cover" style="width: 100%;height: 95%;"></image>
 						</div>
 					</div>
 				</div>
@@ -96,7 +96,8 @@
 					kolNum: "", //近30天推广人数
 					cover: "", //商品展示大图
 				},
-				swiperStyleStr: "width:100%;"
+				swiperStyleStr: "width:100%;",
+				bottomImgStyle: "width: 100%;text-align: center;margin-top: 10px;",
 			}
 		},
 		mounted() {
@@ -108,12 +109,11 @@
 					scrollOffset:true //是否返回节点滚动信息{scrollLeft,scrollTop}
 				},(res) => {
 					//res 可以返回第一个参数对象中指定为true的相关信息
-					console.log("resresresres");
-					console.log(res);
 					if(res.width){
 						// var allHeight = wx.getSystemInfoSync().windowHeight;
 						// var bottomDivHeight = allHeight - res.height - 20;
 						this.swiperStyleStr = "width: 100%;height:" + res.width + "px;";
+						this.bottomImgStyle += this.bottomImgStyle + "height:" + res.width + "px;";
 					}
 				}).exec(function(){
 					//上述节点信息获取成功后执行的回调函数
@@ -142,8 +142,6 @@
 				if(this.currentOpenId && this.$store.state.currentUserInfo.id){
 					this.getProductPwd(productId);
 				}else{
-					console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeelse');
-					console.log(this.currentOpenId , this.$store.state.currentUserInfo.id);
 					var res = await this.getUserOpenId();
 					if(res.openId){
 						if(res.userCode == 0){
@@ -225,11 +223,8 @@
 			},
 			getGoodsDetail(){
 				getGoodsDetailById({productId: this.currentProductId}).then(data => {
-					console.log("ddddddddddgfggg");
-					console.log(data);
 					if(data.data.code == 0){
 						var resData = data.data.data;
-						console.log(data.data);
 						this.goodsObj.id = resData.id;
 						this.goodsObj.imgs = resData.imgs;
 						this.goodsObj.title = resData.title;

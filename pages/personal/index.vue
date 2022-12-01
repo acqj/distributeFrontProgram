@@ -12,7 +12,7 @@
 				<uni-icons type="star-filled" size="15" color="#FF8F1F"></uni-icons>
 				<div style="margin-left: 2px;">一级代理</div>
 			</div>
-			<div class="flexRowCls" style="margin-left: 10px;" v-if="currentUserInfo.parent_openid != null || currentUserInfo.parent_openid != ''">
+			<div class="flexRowCls" style="margin-left: 10px;" v-if="currentUserInfo.parent_openid != null && currentUserInfo.parent_openid != ''">
 				<uni-icons type="star-filled" size="15" color="silver"></uni-icons>
 				<div style="margin-left: 2px;color:silver;">二级代理</div>
 			</div>
@@ -78,7 +78,7 @@
 				//标识带有分享自某个openId 需记录上一级
 				this.parentOpenId = e.shareFromOpenId;
 			}
-			this.getUserInfo();
+			this.getCurrentUserInfo();
 		},
 		onShareAppMessage(e) {
 			return {
@@ -86,8 +86,71 @@
 				path: 'pages/home/index?shareFromOpenId=' + this.$store.state.openId
 			}
 		},
+		onShow() {
+			console.log('oooooooooooooooshow');
+			if(!this.$store.state.openId){
+				this.getCurrentUserInfo();
+			}else{
+				this.currentOpenId = this.$store.state.openId;
+				this.updateLocalUserInfo();
+			}
+		},
 		methods: {
-			...mapActions(['getUserOpenId', 'createUser']),
+			...mapActions(['getUserOpenId', 'createUser', 'getUserInfo']),
+			updateLocalUserInfo(){
+				this.getUserInfo(this.$store.state.openId).then(async(data) => {
+					if(data.code == 0){
+						if(this.$store.state.currentUserInfo.id){
+							this.currentUserInfo = this.$store.state.currentUserInfo;
+							this.nickName = this.currentUserInfo.wx_nick;
+							this.avatar = this.currentUserInfo.wx_avatar;
+							if(this.currentUserInfo.is_wx_authorization != 1){
+								this.isAuth = false;
+							}else{
+								this.isAuth = true;
+							}
+						}
+					}else if(data.code == -2){
+						//当前用户表不存在该用户 自动注册
+						if(this.parentOpenId == this.$store.state.openId){
+							this.parentOpenId = "";
+						}
+						var resUserData = await this.createUser(this.$store.state.openId, this.parentOpenId);
+						if(resUserData.code == 0){
+							if(this.currentUserInfo.is_wx_authorization && this.currentUserInfo.is_wx_authorization != 0){
+								//已授权获取用户名以及头像等详细信息
+								this.nickName = this.currentUserInfo.wx_nick;
+								this.avatar = this.currentUserInfo.wx_avatar;
+							}else{
+								if(!this.currentUserInfo.wx_nick)
+								{
+									this.nickName = "微信用户";
+								}
+								if(!this.currentUserInfo.wx_avatar){
+									this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
+								}
+							}
+							if(this.currentUserInfo.is_wx_authorization != 1){
+								this.isAuth = false;
+							}else{
+								this.isAuth = true;
+							}
+						}else{
+							wx.showToast({
+								title: "获取用户信息失败",
+								icon: "none",
+								duration: 2000
+							})
+						}
+					}
+				}).catch(err => {
+					wx.showToast({
+						title: "获取用户信息失败，网络错误",
+						icon: "error",
+						duration: 2000,
+					})
+				})
+			},
 			async getAuthClick(){
 				if(!this.currentOpenId){
 					var res = await this.getUserOpenId();
@@ -102,34 +165,22 @@
 						if(resData.confirm){
 							wx.getSetting({
 								success:(res) => {
-									console.log('ccccccccccccccccc',res);
 									if (res.authSetting['scope.userInfo']) {
 										wx.getUserProfile({
 											desc: "获取你的昵称、头像信息",//必填项，声明获取用户个人信息后的用途，不超过30个字符
 											success: (res) => {
-												// uni.login({
-												// 	provider: "weixin",
-												// 	success: (data) => {
-												// 		console.log("resresresres",data);
-												// 	}
-												// })
-												// console.log('rrrrrrrrrrrrr',res);
 											  const userInfo = res.userInfo;
 											  this.nickName = userInfo.nickName;
 											  this.avatar = userInfo.avatarUrl;
-											  // this.isAuth = true;
 											  this.updateUser();//授权成功更新用户表
 											},
 											fail: (res) => {
-												// this.nickName = "";
-												// this.avatar = "";
 											  //拒绝授权
 											  wx.showToast({
 												title: "获取失败",
 												icon: "error",
 												duration: 2000,
 												});
-											 //  return;
 											},
 										});
 									}
@@ -206,8 +257,7 @@
 					})
 				}
 			},
-			async getUserInfo(){
-				console.log(this.currentUserInfo);
+			async getCurrentUserInfo(){
 				if(this.currentOpenId && this.currentUserInfo.id){
 					if(this.currentUserInfo.is_wx_authorization && this.currentUserInfo.is_wx_authorization != 0){
 						//已授权获取用户名以及头像等详细信息

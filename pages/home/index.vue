@@ -39,12 +39,19 @@
 							赚：
 						</div>
 						<div style="font-size: 16px;font-weight: 700;color: red;">
-							￥{{item.cosFee}}
+							<!-- ￥{{item.cosFee}} -->
+							<div v-if="hasParent">
+								￥{{item.secondCommission}}
+							</div>
+							<div v-else>
+								￥{{item.onlyFirstCommission}}
+							</div>
 						</div>
 					</div>
 					<div class="flexRowAllWidthCls" style="justify-content: flex-start;margin-top: 10px;">
 						<div style="color: #3D3D3D;font-size: 12px;flex: 1;">
-							评分：{{item.score}} 佣金率：{{item.cosRatio}}
+							评分：{{item.score}} 
+							<!-- 佣金率：{{item.cosRatio}} -->
 						</div>
 						<div>
 							<button type="warn" size="mini" @click.stop="shareBtnClick(item.id)">分享赚钱</button>
@@ -79,12 +86,11 @@
 				wxAvatar: "",
 				pageNum: 1,
 				pageSize: 10,
-				bestGoodsList: []
+				bestGoodsList: [],
+				hasParent: false
 			}
 		},
 		onLoad(e) {
-			console.log("dddddddddddd");
-			console.log(e);
 			if(e.shareFromOpenId){
 				//标识带有分享自某个openId 需记录上一级
 				this.parentOpenId = e.shareFromOpenId;
@@ -97,14 +103,12 @@
 			this.getBeseGoodsListFunc();
 		},
 		onReachBottom(){
-			console.log('==============bottom');
 			this.loadingStatus = "loading";
 			setTimeout(() => {
 				this.getBeseGoodsListFunc();
 			}, 1000)
 		},
 		onShow() {
-			console.log('oooooooooooooooshow');
 			if(!this.$store.state.openId){
 				this.getOpenId();
 			}
@@ -113,17 +117,14 @@
 			
 		},
 		methods: {
-			...mapActions(['getUserOpenId']),
+			...mapActions(['getUserOpenId', 'getUserInfo']),
 			gotoGoodsDetail(productId){
-				console.log('pppppppppppppppppppppppppp', productId);
 				uni.navigateTo({
 					url:"/pages/goods_detail/index?productId=" + productId
 				})
 			},
 			getBeseGoodsListFunc(){
 				getBestGoodsList({pageNum: this.pageNum, pageSize: this.pageSize}).then(data => {
-					console.log("ddddddddddddddddddddddddda");
-					console.log(data);
 					var resData = data.data;
 					if(resData.code == 0){
 						if(resData.list.length > 0){
@@ -211,8 +212,6 @@
 			},
 			getData(){
 				getChannelList().then(data => {
-					console.log('ddddddddddf');
-					console.log(data);
 					if(data.data.code == 0){
 						this.channelList = data.data.list;
 						uni.showToast({
@@ -228,8 +227,6 @@
 						});
 					}
 				}).catch(err => {
-					console.log("eeeeeeeeeeeeeeeeeerr");
-					console.log(err);
 					uni.showToast({
 					    title: '获取频道失败',
 						icon: 'none',
@@ -242,7 +239,6 @@
 			},
 			async getOpenId(){
 				var res = await this.getUserOpenId();
-				// console.log('rrrrrrrresss', res);
 				if(res.openId){
 					this.currentOpenId = res.openId;
 					// this.$store.commit("setopenId", this.currentOpenId);
@@ -260,24 +256,13 @@
 								duration: 2000
 							})
 						}
+					}else{
+						if(this.$store.state.currentUserInfo.parent_openid){
+							this.hasParent = true;
+						}else{
+							this.hasParent = false;
+						}
 					}
-					// getUserByOpenId({openId: this.currentOpenId}).then(data => {
-					// 	var resData = data.data;
-					// 	if(resData.code == 0){
-					// 		this.$store.commit('setUserInfo', resData.userInfo)
-					// 		console.log(this.$store.state.currentUserInfo);
-					// 	}else if(resData.code == -2){
-					// 		//当前用户不存在用户表 需新增
-					// 		this.getWXUserInfo();
-					// 	}
-					// }).catch(err => {
-					// 	wx.showToast({
-					// 			title: "获取用户信息失败",
-					// 			icon: "error",
-					// 			duration: 2000,
-					// 		});
-					// })
-					// this.$refs.getOpenIdErrPop.open('top');
 				}else{
 					wx.showToast({
 						title: "获取当前登录用户信息失败",
@@ -290,12 +275,10 @@
 					title:'授权',
 					content:"是否授权",
 					success: (resData) => {
-						console.log('resDataresDataresDataresData',resData);
 						if(resData.confirm){
 							uni.getUserProfile({
 								desc: "获取你的昵称、头像信息",//必填项，声明获取用户个人信息后的用途，不超过30个字符
 								success: (res) => {
-									console.log("resresresres",res);
 								  const userInfo = res.userInfo;
 								  this.wxNick = userInfo.nickName;
 								  this.wxAvatar = userInfo.avatarUrl;
@@ -324,7 +307,6 @@
 				})
 			},
 			createUserFunc(isAuthorization){
-				console.log('isAuthorizationisAuthorizationisAuthorization', isAuthorization);
 				var params = {
 					openId: this.currentOpenId,
 					wxNick: this.wxNick,
@@ -340,6 +322,17 @@
 							icon: "success",
 							duration: 2000,
 						});
+						this.getUserInfo(this.currentOpenId).then(data => {
+							if(data.code == 0){
+								if(this.$store.state.currentUserInfo.parent_openid){
+									this.hasParent = true;
+								}else{
+									this.hasParent = false;
+								}
+							}
+						}).catch(err => {
+							
+						})
 					}else{
 						wx.showToast({
 							title: resData.msg,

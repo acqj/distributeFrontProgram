@@ -34,12 +34,19 @@
 								赚：
 							</div>
 							<div style="font-size: 16px;font-weight: 700;color: red;">
-								￥{{item.cosFee}}
+								<!-- ￥{{item.cosFee}} -->
+								<div v-if="hasParent">
+									￥{{item.secondCommission}}
+								</div>
+								<div v-else>
+									￥{{item.onlyFirstCommission}}
+								</div>
 							</div>
 						</div>
 						<div class="flexRowAllWidthCls" style="justify-content: flex-start;margin-top: 10px;">
 							<div style="color: #3D3D3D;font-size: 12px;flex: 1;">
-								评分：{{item.score}} 佣金率：{{item.cosRatio}}
+								评分：{{item.score}} 
+								<!-- 佣金率：{{item.cosRatio}} -->
 							</div>
 							<div>
 								<button type="warn" size="mini" @click.stop="shareBtnClick(item.id)">分享赚钱</button>
@@ -66,7 +73,8 @@
 				searchGoodsName: "",
 				styleStr: "margin-top: 10px;",
 				currentOpenId: this.$store.state.openId,
-				parentOpenId: ""
+				parentOpenId: "",
+				hasParent: false
 			}
 		},
 		mounted() {
@@ -107,7 +115,11 @@
 			if(e.searchGoodsName){
 				this.searchGoodsName = e.searchGoodsName;
 			}
-			
+			if(this.$store.state.currentUserInfo.parent_openid){
+				this.hasParent = true;
+			}else{
+				this.hasParent = false;
+			}
 			this.getGoodsList();
 		},
 		created() {
@@ -116,7 +128,6 @@
 		methods:{
 			...mapActions(['getUserOpenId', 'createUser']),
 			gotoGoodsDetail(productId){
-				console.log('pppppppppppppppppppppppppp', productId);
 				uni.navigateTo({
 					url:"/pages/goods_detail/index?productId=" + productId
 				})
@@ -128,6 +139,11 @@
 					var res = await this.getUserOpenId();
 					if(res.openId){
 						if(res.userCode == 0){
+							// if(this.$store.state.currentUserInfo.parent_openid){
+							// 	this.hasParent = true;
+							// }else{
+							// 	this.hasParent = false;
+							// }
 							this.getProductPwd(productId);
 						}else if(res.userCode == -2){
 							//当前用户表不存在该用户 自动注册
@@ -137,6 +153,17 @@
 							var resUserData = await this.createUser(res.openId, this.parentOpenId);
 							if(resUserData.code == 0){
 								this.getProductPwd(productId);
+								// this.getUserInfo(res.openId).then(data => {
+								// 	if(data.code == 0){
+								// 		if(this.$store.state.currentUserInfo.parent_openid){
+								// 			this.hasParent = true;
+								// 		}else{
+								// 			this.hasParent = false;
+								// 		}
+								// 	}
+								// }).catch(err => {
+									
+								// })
 							}else{
 								wx.showToast({
 									title: "获取用户信息失败",

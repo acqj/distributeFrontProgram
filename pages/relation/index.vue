@@ -21,7 +21,7 @@
 				</div>
 			</div>
 		</div>
-		<div style="width: 90%;text-align: left;font-weight: bold;margin-top: 30px;" v-if="parentUserInfo != null">
+		<div style="width: 90%;text-align: left;font-weight: bold;margin-top: 30px;">
 			我的下级
 		</div>
 		<div style="width: 90%;border-radius: 10px;margin-top: 10px;">
@@ -74,8 +74,6 @@
 				}
 				getMyRelation(params).then(data => {
 					var resData = data.data;
-					console.log("ccccccccccccccccccc");
-					console.log(resData);
 					if(resData.code == 0){
 						if(resData.parentUserInfo){
 							this.hasParent = true;

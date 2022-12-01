@@ -158,11 +158,7 @@ const store = createStore({
 				createUser(params).then(async(data) => {
 					var resData = data.data;
 					if(resData.code == 0){
-						// await this.getUserInfo(openId);
 						var resData = await dispatch('getUserInfo', state.openId);
-						// if(resData.code != 0){
-							
-						// }
 						resolve({ code: 0 })
 					}else{
 						resolve({ code: -1 })
