@@ -52,7 +52,8 @@
 		{
 			"path": "pages/commission/index",
 			"style": {
-				"navigationBarTitleText": "佣金"
+				"navigationBarTitleText": "我的佣金",
+				"onReachBottomDistance": 20
 			}
 		},
 		{

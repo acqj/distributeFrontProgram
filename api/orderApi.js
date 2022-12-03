@@ -7,3 +7,12 @@ export function getOrderList(){
 		hideLoading: false
 	})
 }
+
+export function getMyOrderList(data){
+	return request({
+		url: "/order/getMyOrderList",
+		method: "post",
+		data:data,
+		hideLoading: false
+	})
+}

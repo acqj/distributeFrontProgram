@@ -1,32 +1,211 @@
 <template>
-	<div>
-		佣金
-		<button type="warn" size="mini" @click="getOrderBtnClick">查询</button>
+	<div class="flexColAllWidthCls" style="justify-content: flex-start;">
+		<div class="flexRowCls" style="width: 90%;background-color: #fff;border-radius: 10px;">
+			<div class="flexColCls" style="width: 90%;margin-top: 10px;">
+				<div class="flexRowAllWidthCls" style="justify-content: flex-start;">
+					<div style="color: #3d3d3d;flex: 1;text-align: left;font-weight: 700;">
+						我的佣金
+					</div>
+					<div style="color: #666666;" @click="openDialog">
+						规则说明
+					</div>
+				</div>
+				<div class="flexRowAllWidthCls" style="justify-content: flex-start;align-items: flex-end;margin-top: 10px;">
+					<div style="color: #FA5151;font-size: 30px;">
+						{{totalCommission}}
+					</div>
+					<div style="margin-left: 10px;color: #3d3d3d;">
+						￥
+					</div>
+				</div>
+				<div class="flexRowAllWidthCls" style="margin-top: 20px;color: #666666;">
+					<div style="flex:1;">
+						已提现：￥{{cashOutCommission}}
+					</div>
+					<div style="font-size: 10px;">
+						累计提现金额
+					</div>
+				</div>
+				<div class="flexRowAllWidthCls" style="margin-top: 10px;color: #666666;">
+					<div style="flex:1;">
+						未提现：￥{{unCashOutCommission}}
+					</div>
+					<div class="flexRowCls">
+						<div style="font-size: 10px;">
+							可提现金额
+						</div>
+						<div style="margin-left: 5px;">
+							<button type="warn" size="mini" @click="getOrderBtnClick">去提现</button>
+						</div>
+					</div>
+				</div>
+				<div class="flexRowAllWidthCls" style="margin-top: 10px;color: #666666;margin-bottom: 10px;">
+					<div style="flex:1;">
+						未结算：￥{{unSettledCommission}}
+					</div>
+					<div style="font-size: 10px;">
+						已经产生订单，尚未结算金额
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="flexRowAllWidthCls" style="margin-top: 20px;">
+			<uni-segmented-control :current="currentTab" :values="tabItems" @clickItem="onClickItem" styleType="text" style="width: 50%;"></uni-segmented-control>
+		</div>
+		<div v-if="currentTab == 0" class="flexColAllWidthCls" style="margin-top: 10px;">
+			<div v-for="item in orderList" :key="item.orderId" class="flexRowCls" style="width: 90%;background-color: #fff;border-radius: 10px;margin-bottom: 10px;">
+				<div class="flexRowCls" style="margin: 10px;">
+					<div>
+						<image :src="item.productImg" style="width: 60px;height: 60px;"></image>
+					</div>
+					<div class="flexColCls" style="align-items: flex-start;justify-content: flex-start;margin-left: 10px;">
+						<div style="color: #3d3d3d;font-weight: 700;font-size: 12px;">
+							{{item.productName}}
+						</div>
+						<div class="flexRowCls" style="margin-top: 10px;justify-content: flex-start;">
+							<div>
+								￥
+							</div>
+							<div style="color: #FA5151;font-size: 22px;margin-left:5px;">
+								{{item.showCommission}}
+							</div>
+						</div>
+						<div class="flexRowCls" style="justify-content: flex-start;width: 100%;">
+							<div style="flex:1;font-size: 12px;">
+								{{item.createTime}}
+							</div>
+							<div style="font-size: 12px;">
+								{{item.shareType}}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div v-if="currentTab == 1" class="flexColAllWidthCls" style="margin-top: 10px;">
+			提现
+		</div>
+		<uni-load-more :status="loadingStatus"></uni-load-more>
+		<uni-popup ref="commissionRulePopup" type="dialog">
+			<uni-popup-dialog mode="base" message="成功消息" :duration="2000" :before-close="true" @close="close" @confirm="close">
+				<div>
+					佣金规则弹窗内容
+				</div>
+			</uni-popup-dialog>
+		</uni-popup>
 	</div>
 </template>
 
 <script>
-	import { getOrderList } from '@/api/orderApi';
+	import { getOrderList, getMyOrderList } from '@/api/orderApi';
+	import { getMyCommission } from '@/api/commissionApi';
 	export default{
 		name: "CommissionIndex",
 		data(){
 			return {
-				
+				loadingStatus: "more",
+				totalCommission: "0",
+				cashOutCommission: "0",
+				unCashOutCommission: "0",
+				unSettledCommission: "0",
+				currentOpenId: this.$store.state.openId,
+				tabItems: ["我的订单", "提现记录"],
+				currentTab: 0,
+				orderList: [],
+				orderPageNum: 1,
+				orderPageSize: 10,
+				cashPageNum: 1,
+				cashPageSize: 10
 			}
 		},
 		onLoad(e){
-			
+			this.getMyCommission();
+			this.getMyOrderList();
+		},
+		onReachBottom(){
+			this.loadingStatus = "loading";
+			setTimeout(() => {
+				if(this.currentTab == 0){
+					this.getMyOrderList();
+				}else{
+					
+				}
+			}, 1000)
+		},
+		onShow() {
+			this.getMyCommission();
+			this.currentTab = 0;
+			this.orderPageNum = 1;
+			this.orderPageSize = 10;
+			this.cashPageNum = 1;
+			this.cashPageSize  10;
+			this.getMyOrderList();
 		},
 		methods: {
-			getOrderBtnClick(){
-				getOrderList().then(data => {
-					console.log("ddddddddddddddddddddaaa");
-					console.log(data);
+			close(){
+				this.$refs.commissionRulePopup.close();
+			},
+			openDialog(){
+				this.$refs.commissionRulePopup.open();
+			},
+			onClickItem(e){
+				this.currentTab = e.currentIndex;
+			},
+			getMyOrderList(){
+				console.log("this.currentOpenId this.currentOpenId this.currentOpenId ");
+				console.log(this.currentOpenId);
+				getMyOrderList({openId: this.currentOpenId, pageNum: this.orderPageNum, pageSize: this.orderPageSize }).then(data=> {
+					if(data.data.code == 0){
+						var resData = data.data.data;
+						if(resData && resData.length > 0){
+							this.orderPageNum += 1;
+							this.orderList = resData;
+							if(this.orderList.length < (this.orderPageNum * this.orderPageSize)){
+								this.loadingStatus = "noMore";
+							}else{
+								this.loadingStatus = "more";
+							}
+						}else{
+							this.loadingStatus = "noMore";
+						}
+					}else{
+						wx.showToast({
+							title: data.data.msg,
+							icon: "none"
+						})
+					}
 				}).catch(err => {
 					wx.showToast({
-						title: "获取订单失败，网络错误",
-						icon: "none",
-						duration: 2000
+						title: "获取订单列表失败，网络错误",
+						icon: 'none'
+					})
+				})
+			},
+			getMyCommission(){
+				getMyCommission({openId: this.currentOpenId}).then(data => {
+					if(data.data.code == 0){
+						var resData = data.data.data;
+						if(resData){
+							this.totalCommission = resData.totalCommission;
+							this.cashOutCommission = resData.cashOutCommision;
+							this.unCashOutCommission = resData.unCashOutCommision;
+							this.unSettledCommission = resData.unSettledCommission;
+						}else{
+							this.totalCommission = 0;
+							this.cashOutCommission = 0;
+							this.unCashOutCommission = 0;
+						}
+					}else{
+						wx.showToast({
+							title: resData.msg,
+							icon: 'none'
+						})
+					}
+				}).catch(err => {
+					wx.showToast({
+						title: "获取佣金信息失败，网络错误",
+						icon: 'none'
 					})
 				})
 			}
