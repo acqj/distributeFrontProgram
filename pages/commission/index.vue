@@ -139,7 +139,7 @@
 			this.orderPageNum = 1;
 			this.orderPageSize = 10;
 			this.cashPageNum = 1;
-			this.cashPageSize  10;
+			this.cashPageSize = 10;
 			this.getMyOrderList();
 		},
 		methods: {
