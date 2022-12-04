@@ -35,7 +35,7 @@
 							可提现金额
 						</div>
 						<div style="margin-left: 5px;">
-							<button type="warn" size="mini" @click="getOrderBtnClick">去提现</button>
+							<button type="warn" size="mini" @click="cashoutBtnClick">去提现</button>
 						</div>
 					</div>
 				</div>
@@ -88,9 +88,16 @@
 		</div>
 		<uni-load-more :status="loadingStatus"></uni-load-more>
 		<uni-popup ref="commissionRulePopup" type="dialog">
-			<uni-popup-dialog mode="base" message="成功消息" :duration="2000" :before-close="true" @close="close" @confirm="close">
+			<uni-popup-dialog mode="base" title="佣金规则" :duration="2000" :before-close="true" @close="close" @confirm="close">
 				<div>
 					佣金规则弹窗内容
+				</div>
+			</uni-popup-dialog>
+		</uni-popup>
+		<uni-popup ref="commissionAmountPop" type="dialog">
+			<uni-popup-dialog title="提现" mode="base" :duration="2000" :before-close="true" @close="closeCommissionAmountPop" @confirm="sureBtnClick">
+				<div>
+					<uni-number-box :min="0" :step="0.01" v-model="commissionAmount" style="width: 50%;"></uni-number-box>
 				</div>
 			</uni-popup-dialog>
 		</uni-popup>
@@ -99,7 +106,7 @@
 
 <script>
 	import { getOrderList, getMyOrderList } from '@/api/orderApi';
-	import { getMyCommission } from '@/api/commissionApi';
+	import { getMyCommission, checkCommission } from '@/api/commissionApi';
 	export default{
 		name: "CommissionIndex",
 		data(){
@@ -116,7 +123,8 @@
 				orderPageNum: 1,
 				orderPageSize: 10,
 				cashPageNum: 1,
-				cashPageSize: 10
+				cashPageSize: 10,
+				commissionAmount: 0
 			}
 		},
 		onLoad(e){
@@ -143,6 +151,46 @@
 			this.getMyOrderList();
 		},
 		methods: {
+			sureBtnClick(){
+				if(this.commissionAmount){
+					if(this.commissionAmount <= 0){
+						wx.showToast({
+							title:"请输入提现金额",
+							icon: "none"
+						})
+					}else{
+						checkCommission({openId: this.currentOpenId, commissionAmount: this.commissionAmount}).then(data => {
+							console.log(data);
+							if(data.data.code == 0){
+								//执行提现
+							}else{
+								wx.showToast({
+									title: data.data.msg,
+									icon: "none"
+								})
+							}
+						}).catch(err => {
+							wx.showToast({
+								title: "提现失败，网络错误",
+								icon: "none"
+							})
+						})
+					}
+				}else{
+					wx.showToast({
+						title:"请输入提现金额",
+						icon: "none"
+					})
+				}
+				console.log(this.commissionAmount);
+			},
+			cashoutBtnClick(){
+				this.$refs.commissionAmountPop.open();
+			},
+			closeCommissionAmountPop(){
+				this.commissionAmount = 0;
+				this.$refs.commissionAmountPop.close();
+			},
 			close(){
 				this.$refs.commissionRulePopup.close();
 			},

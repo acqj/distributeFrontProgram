@@ -8,3 +8,12 @@ export function getMyCommission(data){
 		hideLoading: false
 	})
 }
+
+export function checkCommission(data){
+	return request({
+		url: "/commissionApplets/checkCashout",
+		method: "post",
+		data: data,
+		hideLoading: false
+	})
+}
