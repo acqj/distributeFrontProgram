@@ -107,6 +107,7 @@
 <script>
 	import { getOrderList, getMyOrderList } from '@/api/orderApi';
 	import { getMyCommission, checkCommission } from '@/api/commissionApi';
+	import { getNonceStr } from '@/common/util';
 	export default{
 		name: "CommissionIndex",
 		data(){
@@ -152,17 +153,34 @@
 		},
 		methods: {
 			sureBtnClick(){
+				var resNonceStr = getNonceStr(32);
+				console.log('rrrrrrrrrrrrrrrrrrrrrrrrrr');
+				console.log(resNonceStr);
 				if(this.commissionAmount){
 					if(this.commissionAmount <= 0){
 						wx.showToast({
 							title:"请输入提现金额",
 							icon: "none"
 						})
+					}else if(!resNonceStr){
+						wx.showToast({
+							title: "生成随机参数失败",
+							icon: "none"
+						})
 					}else{
-						checkCommission({openId: this.currentOpenId, commissionAmount: this.commissionAmount}).then(data => {
+						checkCommission({openId: this.currentOpenId, commissionAmount: this.commissionAmount, nonceStr: resNonceStr}).then(data => {
 							console.log(data);
 							if(data.data.code == 0){
 								//执行提现
+								var resSign = data.data.sign;
+								if(resSign){
+									
+								}else{
+									wx.showToast({
+										title: "获取签名失败，无法提现",
+										icon: "none"
+									})
+								}
 							}else{
 								wx.showToast({
 									title: data.data.msg,
