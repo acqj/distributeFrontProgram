@@ -194,13 +194,17 @@
 						cashoutFunc({openId: this.currentOpenId, commissionAmount: this.commissionAmount}).then(data => {
 							console.log(data);
 							if(data.data.code == 0){
-								this.$refs.commissionAmountPop.close();
-								this.commissionAmount = 0;
-								//执行提现
 								wx.showToast({
 									title: "提交成功，请等待提现结果",
 									icon: "none"
 								})
+								this.$refs.commissionAmountPop.close();
+								this.commissionAmount = 0;
+								//执行提现
+								this.getMyCommission();
+								if(this.currentTab == 1){
+									// this.getMyOrderList();
+								}
 							}else{
 								wx.showToast({
 									title: data.data.msg,
