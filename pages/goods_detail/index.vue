@@ -131,7 +131,7 @@
 			}else{
 				wx.showToast({
 					title: "商品id有误，获取信息失败",
-					icon: "none",
+					icon: "error",
 					duration: 2000
 				})
 			}
@@ -157,21 +157,21 @@
 							}else{
 								wx.showToast({
 									title: "获取用户信息失败",
-									icon: "none",
+									icon: "error",
 									duration: 2000
 								})
 							}
 						}else{
 							wx.showToast({
 								title: "当前用户信息有误，登陆失败",
-								icon: "none",
+								icon: "error",
 								duration: 2000
 							})
 						}
 					}else{
 						wx.showToast({
 							title: "当前用户信息有误，登陆失败",
-							icon: "none",
+							icon: "error",
 							duration: 2000
 						})
 					}
@@ -187,14 +187,14 @@
 								success(res) {
 									wx.showToast({
 										title: "复制口令成功",
-										icon: "none",
+										icon: "success",
 										duration: 2000
 									})
 								},
 								fail() {
 									wx.showToast({
 										title: "复制失败：" + productPwd,
-										icon: "none",
+										icon: "error",
 										duration: 2000
 									})
 								}
@@ -202,21 +202,21 @@
 						}else{
 							wx.showToast({
 								title: "生成口令失败",
-								icon: "none",
+								icon: "error",
 								duration: 2000
 							})
 						}
 					}else{
 						wx.showToast({
 							title: data.data.message,
-							icon: "none",
+							icon: "error",
 							duration: 2000
 						})
 					}
 				}).catch(err => {
 					wx.showToast({
 						title: "获取商品口令失败，网络错误",
-						icon: "none",
+						icon: "error",
 						duration: 2000
 					})
 				})
@@ -241,14 +241,14 @@
 					}else{
 						wx.showToast({
 							title: data.data.msg,
-							icon: "none",
+							icon: "error",
 							duration: 2000
 						})
 					}
 				}).catch(err => {
 					wx.showToast({
 						title: "查询失败，网络错误",
-						icon: "none",
+						icon: "error",
 						duration: 2000
 					})
 				})

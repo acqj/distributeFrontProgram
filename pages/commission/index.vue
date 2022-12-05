@@ -101,12 +101,20 @@
 				</div>
 			</uni-popup-dialog>
 		</uni-popup>
+		<uni-popup ref="bankCardMsgPopup" type="dialog">
+			<uni-popup-dialog mode="base" confirmText="去完善" title="提示" :duration="2000" :before-close="true" @close="closeBankCardPop" @confirm="gotoBankCardInfo">
+				<div>
+					请完善银行卡信息
+				</div>
+			</uni-popup-dialog>
+		</uni-popup>
 	</div>
 </template>
 
 <script>
 	import { getOrderList, getMyOrderList } from '@/api/orderApi';
 	import { getMyCommission, checkCommission } from '@/api/commissionApi';
+	import { getBankCardInfo } from '@/api/bankCardApi';
 	import { getNonceStr } from '@/common/util';
 	export default{
 		name: "CommissionIndex",
@@ -165,7 +173,7 @@
 					}else if(!resNonceStr){
 						wx.showToast({
 							title: "生成随机参数失败",
-							icon: "none"
+							icon: "error"
 						})
 					}else{
 						checkCommission({openId: this.currentOpenId, commissionAmount: this.commissionAmount, nonceStr: resNonceStr}).then(data => {
@@ -178,19 +186,19 @@
 								}else{
 									wx.showToast({
 										title: "获取签名失败，无法提现",
-										icon: "none"
+										icon: "error"
 									})
 								}
 							}else{
 								wx.showToast({
 									title: data.data.msg,
-									icon: "none"
+									icon: "error"
 								})
 							}
 						}).catch(err => {
 							wx.showToast({
 								title: "提现失败，网络错误",
-								icon: "none"
+								icon: "error"
 							})
 						})
 					}
@@ -202,8 +210,36 @@
 				}
 				console.log(this.commissionAmount);
 			},
+			closeBankCardPop(){
+				this.$refs.bankCardMsgPopup.close();
+			},
+			gotoBankCardInfo(){
+				this.$refs.bankCardMsgPopup.close();
+				uni.navigateTo({
+					url:"/pages/bankCard_info/index?isNeedBack=true"
+				})
+			},
 			cashoutBtnClick(){
-				this.$refs.commissionAmountPop.open();
+				getBankCardInfo({openId: this.currentOpenId}).then(data => {
+					if(data.data.code == 0){
+						if(data.data.data){
+							this.$refs.commissionAmountPop.open();
+						}else{
+							//未查询到银行卡信息需弹窗提醒
+							this.$refs.bankCardMsgPopup.open();
+						}
+					}else{
+						wx.showToast({
+							title: data.data.msg,
+							icon: "error"
+						})
+					}
+				}).catch(err => {
+					wx.showToast({
+						title: "获取银行卡信息失败，网络错误",
+						icon: "error"
+					})
+				})
 			},
 			closeCommissionAmountPop(){
 				this.commissionAmount = 0;
@@ -238,13 +274,13 @@
 					}else{
 						wx.showToast({
 							title: data.data.msg,
-							icon: "none"
+							icon: "error"
 						})
 					}
 				}).catch(err => {
 					wx.showToast({
 						title: "获取订单列表失败，网络错误",
-						icon: 'none'
+						icon: 'error'
 					})
 				})
 			},
@@ -265,13 +301,13 @@
 					}else{
 						wx.showToast({
 							title: resData.msg,
-							icon: 'none'
+							icon: 'error'
 						})
 					}
 				}).catch(err => {
 					wx.showToast({
 						title: "获取佣金信息失败，网络错误",
-						icon: 'none'
+						icon: 'error'
 					})
 				})
 			}

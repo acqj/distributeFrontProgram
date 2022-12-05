@@ -31,7 +31,17 @@
 		<div class="flexRowAllWidthCls" style="margin-top: 20px;">
 			<button type="warn" style="width: 80%;" data-name="shareBtn" open-type="share">发展销售队伍</button>
 		</div>
-		<div class="flexRowCls" style="background-color: #fff;border-radius: 10px;width: 80%;margin-top: 300px;">
+		<div class="flexRowCls" style="background-color: #fff;border-radius: 10px;width: 80%;margin-top: 200px;">
+			<div class="flexRowCls" style="width: 85%;margin: 10px 0;" @click="gotoBankCardInfo">
+				<div style="color: #3d3d3d;font-size: 14px;flex: 1;">
+					银行卡信息
+				</div>
+				<div>
+					<uni-icons type="right" size="20"></uni-icons>
+				</div>
+			</div>
+		</div>
+		<div class="flexRowCls" style="background-color: #fff;border-radius: 10px;width: 80%;margin-top: 10px;">
 			<div class="flexRowCls" style="width: 85%;margin: 10px 0;" @click="gotoFeedback">
 				<div style="color: #3d3d3d;font-size: 14px;flex: 1;">
 					意见反馈
@@ -50,7 +60,6 @@
 					<uni-icons type="right" size="20"></uni-icons>
 				</div>
 			</div>
-			
 		</div>
 	</div>
 </template>
@@ -97,6 +106,11 @@
 		},
 		methods: {
 			...mapActions(['getUserOpenId', 'createUser', 'getUserInfo']),
+			gotoBankCardInfo(){
+				uni.navigateTo({
+					url:"/pages/bankCard_info/index"
+				})
+			},
 			updateLocalUserInfo(){
 				this.getUserInfo(this.$store.state.openId).then(async(data) => {
 					if(data.code == 0){
