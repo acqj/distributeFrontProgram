@@ -39,7 +39,7 @@
 							if(resData.code == 0){
 								wx.showToast({
 									title: "提交成功",
-									icon: "success",
+									icon: "none",
 									duration: 2000
 								})
 								setTimeout(() => {
@@ -52,7 +52,7 @@
 								this.btnDisabled = false;
 								wx.showToast({
 									title: resData.msg,
-									icon: "error",
+									icon: "none",
 									duration: 2000
 								})
 							}
@@ -61,7 +61,7 @@
 							this.btnDisabled = false;
 							wx.showToast({
 								title: "操作失败，网络错误",
-								icon: "error",
+								icon: "none",
 								duration: 2000
 							})
 						})

@@ -160,7 +160,7 @@
 				}).catch(err => {
 					wx.showToast({
 						title: "获取用户信息失败，网络错误",
-						icon: "error",
+						icon: "none",
 						duration: 2000,
 					})
 				})
@@ -192,7 +192,7 @@
 											  //拒绝授权
 											  wx.showToast({
 												title: "获取失败",
-												icon: "error",
+												icon: "none",
 												duration: 2000,
 												});
 											},

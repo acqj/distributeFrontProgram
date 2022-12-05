@@ -113,7 +113,7 @@
 
 <script>
 	import { getOrderList, getMyOrderList } from '@/api/orderApi';
-	import { getMyCommission, checkCommission } from '@/api/commissionApi';
+	import { getMyCommission, cashoutFunc, getCashOutRecordList } from '@/api/commissionApi';
 	import { getBankCardInfo } from '@/api/bankCardApi';
 	import { getNonceStr } from '@/common/util';
 	export default{
@@ -160,10 +160,25 @@
 			this.getMyOrderList();
 		},
 		methods: {
+			getCashOutRecordList(){
+				getCashOutRecordList({openId: this.currentOpenId, pageNum: this.cashPageNum, pageSize: this.cashPageSize}).then(data => {
+					if(data.data.code == 0){
+						
+					}else{
+						wx.showToast({
+							title: data.data.msg,
+							icon: "none"
+						})
+					}
+				}).catch(err => {
+					wx.showToast({
+						title: "获取提现记录失败，网络错误",
+						icon: "none"
+					})
+				})
+			},
 			sureBtnClick(){
 				var resNonceStr = getNonceStr(32);
-				console.log('rrrrrrrrrrrrrrrrrrrrrrrrrr');
-				console.log(resNonceStr);
 				if(this.commissionAmount){
 					if(this.commissionAmount <= 0){
 						wx.showToast({
@@ -173,32 +188,29 @@
 					}else if(!resNonceStr){
 						wx.showToast({
 							title: "生成随机参数失败",
-							icon: "error"
+							icon: "none"
 						})
 					}else{
-						checkCommission({openId: this.currentOpenId, commissionAmount: this.commissionAmount, nonceStr: resNonceStr}).then(data => {
+						cashoutFunc({openId: this.currentOpenId, commissionAmount: this.commissionAmount}).then(data => {
 							console.log(data);
 							if(data.data.code == 0){
+								this.$refs.commissionAmountPop.close();
+								this.commissionAmount = 0;
 								//执行提现
-								var resSign = data.data.sign;
-								if(resSign){
-									
-								}else{
-									wx.showToast({
-										title: "获取签名失败，无法提现",
-										icon: "error"
-									})
-								}
+								wx.showToast({
+									title: "提交成功，请等待提现结果",
+									icon: "none"
+								})
 							}else{
 								wx.showToast({
 									title: data.data.msg,
-									icon: "error"
+									icon: "none"
 								})
 							}
 						}).catch(err => {
 							wx.showToast({
 								title: "提现失败，网络错误",
-								icon: "error"
+								icon: "none"
 							})
 						})
 					}
@@ -231,13 +243,13 @@
 					}else{
 						wx.showToast({
 							title: data.data.msg,
-							icon: "error"
+							icon: "none"
 						})
 					}
 				}).catch(err => {
 					wx.showToast({
 						title: "获取银行卡信息失败，网络错误",
-						icon: "error"
+						icon: "none"
 					})
 				})
 			},
@@ -255,8 +267,6 @@
 				this.currentTab = e.currentIndex;
 			},
 			getMyOrderList(){
-				console.log("this.currentOpenId this.currentOpenId this.currentOpenId ");
-				console.log(this.currentOpenId);
 				getMyOrderList({openId: this.currentOpenId, pageNum: this.orderPageNum, pageSize: this.orderPageSize }).then(data=> {
 					if(data.data.code == 0){
 						var resData = data.data.data;
@@ -274,13 +284,13 @@
 					}else{
 						wx.showToast({
 							title: data.data.msg,
-							icon: "error"
+							icon: "none"
 						})
 					}
 				}).catch(err => {
 					wx.showToast({
 						title: "获取订单列表失败，网络错误",
-						icon: 'error'
+						icon: 'none'
 					})
 				})
 			},
@@ -301,13 +311,13 @@
 					}else{
 						wx.showToast({
 							title: resData.msg,
-							icon: 'error'
+							icon: 'none'
 						})
 					}
 				}).catch(err => {
 					wx.showToast({
 						title: "获取佣金信息失败，网络错误",
-						icon: 'error'
+						icon: 'none'
 					})
 				})
 			}
