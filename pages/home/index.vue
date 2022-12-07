@@ -39,13 +39,13 @@
 							赚：
 						</div>
 						<div style="font-size: 16px;font-weight: 700;color: red;">
-							<!-- ￥{{item.cosFee}} -->
-							<div v-if="hasParent">
+							￥{{item.onlyFirstCommission}}
+							<!-- <div v-if="hasParent">
 								￥{{item.secondCommission}}
 							</div>
 							<div v-else>
 								￥{{item.onlyFirstCommission}}
-							</div>
+							</div> -->
 						</div>
 					</div>
 					<div class="flexRowAllWidthCls" style="justify-content: flex-start;margin-top: 10px;">

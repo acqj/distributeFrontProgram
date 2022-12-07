@@ -35,3 +35,12 @@ export function getCashOutRecordList(data){
 		hideLoading: false
 	})
 }
+
+export function getLowerLevelData(data){
+	return request({
+		url: "/commissionApplets/getLowerLevelData",
+		method: "post",
+		data: data,
+		hideLoading: false
+	})
+}

@@ -11,11 +11,16 @@
 					</div>
 				</div>
 				<div class="flexRowAllWidthCls" style="justify-content: flex-start;align-items: flex-end;margin-top: 10px;">
-					<div style="color: #FA5151;font-size: 30px;">
-						{{totalCommission}}
+					<div class="flexRowCls" style="flex:1;">
+						<div style="color: #FA5151;font-size: 30px;">
+							{{totalCommission}}
+						</div>
+						<div style="margin-left: 10px;color: #3d3d3d;">
+							￥
+						</div>
 					</div>
-					<div style="margin-left: 10px;color: #3d3d3d;">
-						￥
+					<div>
+						<button size="mini" type="warn" @click="gotoLowerLevelTotal">二级代理佣金汇总</button>
 					</div>
 				</div>
 				<div class="flexRowAllWidthCls" style="margin-top: 20px;color: #666666;">
@@ -35,7 +40,8 @@
 							可提现金额
 						</div>
 						<div style="margin-left: 5px;">
-							<button type="warn" size="mini" @click="cashoutBtnClick">去提现</button>
+							<button v-if="isCanCashOut" type="warn" size="mini" @click="cashoutBtnClick">去提现</button>
+							<button type="warn" size="mini" :disabled="true">去提现</button>
 						</div>
 					</div>
 				</div>
@@ -54,39 +60,71 @@
 			<uni-segmented-control :current="currentTab" :values="tabItems" @clickItem="onClickItem" styleType="text" style="width: 50%;"></uni-segmented-control>
 		</div>
 		<div v-if="currentTab == 0" class="flexColAllWidthCls" style="margin-top: 10px;">
-			<div v-for="item in orderList" :key="item.orderId" class="flexRowCls" style="width: 90%;background-color: #fff;border-radius: 10px;margin-bottom: 10px;">
-				<div class="flexRowCls" style="margin: 10px;">
-					<div>
-						<image :src="item.productImg" style="width: 60px;height: 60px;"></image>
-					</div>
-					<div class="flexColCls" style="align-items: flex-start;justify-content: flex-start;margin-left: 10px;">
-						<div style="color: #3d3d3d;font-weight: 700;font-size: 12px;">
-							{{item.productName}}
+			<div v-if="orderList && orderList.length>0">
+				<div v-for="item in orderList" :key="item.orderId" class="flexRowCls" style="width: 90%;background-color: #fff;border-radius: 10px;margin-bottom: 10px;">
+					<div class="flexRowCls" style="margin: 10px;">
+						<div>
+							<image :src="item.productImg" style="width: 60px;height: 60px;"></image>
 						</div>
-						<div class="flexRowCls" style="margin-top: 10px;justify-content: flex-start;">
-							<div>
-								￥
+						<div class="flexColCls" style="align-items: flex-start;justify-content: flex-start;margin-left: 10px;">
+							<div style="color: #3d3d3d;font-weight: 700;font-size: 12px;">
+								{{item.productName}}
 							</div>
-							<div style="color: #FA5151;font-size: 22px;margin-left:5px;">
-								{{item.showCommission}}
+							<div class="flexRowCls" style="margin-top: 10px;justify-content: flex-start;">
+								<div>
+									￥
+								</div>
+								<div style="color: #FA5151;font-size: 22px;margin-left:5px;">
+									{{item.showCommission}}
+								</div>
 							</div>
-						</div>
-						<div class="flexRowCls" style="justify-content: flex-start;width: 100%;">
-							<div style="flex:1;font-size: 12px;">
-								{{item.createTime}}
-							</div>
-							<div style="font-size: 12px;">
-								{{item.shareType}}
+							<div class="flexRowCls" style="justify-content: flex-start;width: 100%;">
+								<div style="flex:1;font-size: 12px;">
+									{{item.createTime}}
+								</div>
+								<div style="font-size: 12px;">
+									{{item.shareType}}
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+			<div v-else style="margin-top: 20px;color: #666666;">
+				暂无数据
+			</div>
 		</div>
 		<div v-if="currentTab == 1" class="flexColAllWidthCls" style="margin-top: 10px;">
-			提现
+			<div v-if="commissionRecordList && commissionRecordList.length > 0" class="flexColCls" style="width: 90%;background-color: #fff;padding:10px;">
+				<div v-for="(item, index) in commissionRecordList" :key="item.id" class="flexColAllWidthCls">
+					<div class="flexRowAllWidthCls">
+						<div class="flexRowCls" style="flex:1;">
+							￥{{item.cashOutAmount}}
+						</div>
+						<div class="flexRowCls" style="flex:1;font-size: 12px;">
+							<div v-if="item.status == 1" style="color: #42b983;">
+								提现成功
+							</div>
+							<div v-if="item.status == 2" style="color: #007aff;">
+								提现中
+							</div>
+							<div v-if="item.status == 3" style="color: #FA5151;">
+								提现失败
+							</div>
+						</div>
+						<div class="flexRowCls" style="flex:2;font-size: 12px;">
+							{{item.createTime}}
+						</div>
+					</div>
+					<div v-if="commissionRecordList.length > 1 && index < (commissionRecordList.length - 1)" class="underLineCls"></div>
+				</div>
+			</div>
+			<div v-else style="margin-top: 20px;color: #666666;">
+				暂无数据
+			</div>
 		</div>
-		<uni-load-more :status="loadingStatus"></uni-load-more>
+		<uni-load-more v-if="currentTab==0 && isShowOrderLoadingStatus" :status="loadingStatus"></uni-load-more>
+		<uni-load-more v-if="currentTab==1 && isShowCRLoadingStatus" :status="cashoutLoadingStatus"></uni-load-more>
 		<uni-popup ref="commissionRulePopup" type="dialog">
 			<uni-popup-dialog mode="base" title="佣金规则" :duration="2000" :before-close="true" @close="close" @confirm="close">
 				<div>
@@ -112,7 +150,7 @@
 </template>
 
 <script>
-	import { getOrderList, getMyOrderList } from '@/api/orderApi';
+	import { getOrderList, getOnlyMyOrderList } from '@/api/orderApi';
 	import { getMyCommission, cashoutFunc, getCashOutRecordList } from '@/api/commissionApi';
 	import { getBankCardInfo } from '@/api/bankCardApi';
 	import { getNonceStr } from '@/common/util';
@@ -120,7 +158,10 @@
 		name: "CommissionIndex",
 		data(){
 			return {
+				isShowCRLoadingStatus: false,
+				isShowOrderLoadingStatus: false,
 				loadingStatus: "more",
+				cashoutLoadingStatus: "more",
 				totalCommission: "0",
 				cashOutCommission: "0",
 				unCashOutCommission: "0",
@@ -131,22 +172,31 @@
 				orderList: [],
 				orderPageNum: 1,
 				orderPageSize: 10,
+				commissionRecordList: [],
 				cashPageNum: 1,
 				cashPageSize: 10,
-				commissionAmount: 0
+				commissionAmount: 0,
+				isCanCashOut: true
 			}
 		},
 		onLoad(e){
 			this.getMyCommission();
-			this.getMyOrderList();
+			// this.getMyOrderList();
+			if(this.currentTab == 0){
+				this.getOnlyMyOrderList();
+			}else{
+				this.getCashOutRecordList();
+			}
 		},
 		onReachBottom(){
 			this.loadingStatus = "loading";
 			setTimeout(() => {
 				if(this.currentTab == 0){
-					this.getMyOrderList();
+					this.isShowOrderLoadingStatus = true;
+					this.getOnlyMyOrderList();
 				}else{
-					
+					this.isShowCRLoadingStatus = true;
+					this.getCashOutRecordList();
 				}
 			}, 1000)
 		},
@@ -157,13 +207,39 @@
 			this.orderPageSize = 10;
 			this.cashPageNum = 1;
 			this.cashPageSize = 10;
-			this.getMyOrderList();
+			this.getOnlyMyOrderList();
+			this.checkCurrentDate();
 		},
 		methods: {
+			gotoLowerLevelTotal(){
+				uni.navigateTo({
+					url:"/pages/lowerLevel_total/index"
+				})
+			},
+			checkCurrentDate(){
+				var date = new Date();
+				var currentDay = date.getDate();
+				if(currentDay != 10 && currentDay != 20){
+					this.isCanCashOut = false;
+				}else{
+					this.isCanCashOut = true;
+				}
+			},
 			getCashOutRecordList(){
 				getCashOutRecordList({openId: this.currentOpenId, pageNum: this.cashPageNum, pageSize: this.cashPageSize}).then(data => {
 					if(data.data.code == 0){
-						
+						var resData = data.data.data;
+						if(resData && resData.length > 0){
+							this.commissionRecordList = resData;
+							if(this.commissionRecordList.length < (this.cashPageNum * this.cashPageSize)){
+								this.cashoutLoadingStatus = "noMore";
+							}else{
+								this.cashoutLoadingStatus = "more";
+								this.cashPageNum += 1;
+							}
+						}else{
+							this.cashoutLoadingStatus = "noMore";
+						}
 					}else{
 						wx.showToast({
 							title: data.data.msg,
@@ -202,8 +278,8 @@
 								this.commissionAmount = 0;
 								//执行提现
 								this.getMyCommission();
-								if(this.currentTab == 1){
-									// this.getMyOrderList();
+								if(this.currentTab == 2){
+									this.getCashOutRecordList();
 								}
 							}else{
 								wx.showToast({
@@ -269,17 +345,22 @@
 			},
 			onClickItem(e){
 				this.currentTab = e.currentIndex;
+				if(this.currentTab == 0){
+					this.getOnlyMyOrderList();
+				}else{
+					this.getCashOutRecordList();
+				}
 			},
-			getMyOrderList(){
-				getMyOrderList({openId: this.currentOpenId, pageNum: this.orderPageNum, pageSize: this.orderPageSize }).then(data=> {
+			getOnlyMyOrderList(){
+				getOnlyMyOrderList({openId: this.currentOpenId, pageNum: this.orderPageNum, pageSize: this.orderPageSize }).then(data=> {
 					if(data.data.code == 0){
 						var resData = data.data.data;
 						if(resData && resData.length > 0){
-							this.orderPageNum += 1;
 							this.orderList = resData;
 							if(this.orderList.length < (this.orderPageNum * this.orderPageSize)){
 								this.loadingStatus = "noMore";
 							}else{
+								this.orderPageNum += 1;
 								this.loadingStatus = "more";
 							}
 						}else{
@@ -330,4 +411,10 @@
 </script>
 
 <style>
+	.underLineCls{
+		width: 100%;
+		height: 1px;
+		background-color: #f5f5f5;
+		margin: 5px 0;
+	}
 </style>

@@ -1,6 +1,6 @@
 <template>
 	<div class="flexColAllWidthCls">
-		<div style="width: 90%;text-align: left;font-weight: bold;margin-top: 20px;" v-if="parentUserInfo != null">
+		<!-- <div style="width: 90%;text-align: left;font-weight: bold;margin-top: 20px;" v-if="parentUserInfo != null">
 			我的上级
 		</div>
 		<div v-if="parentUserInfo != null" class="flexColCls" style="width: 90%;border-radius: 10px;background-color: #fff;margin-top: 10px;">
@@ -20,7 +20,7 @@
 					{{parentUserInfo.create_datetime}}
 				</div>
 			</div>
-		</div>
+		</div> -->
 		<div style="width: 90%;text-align: left;font-weight: bold;margin-top: 30px;">
 			我的下级
 		</div>

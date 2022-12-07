@@ -16,3 +16,12 @@ export function getMyOrderList(data){
 		hideLoading: false
 	})
 }
+
+export function getOnlyMyOrderList(data){
+	return request({
+		url: "/order/getOnlyMyOrderList",
+		method: "post",
+		data:data,
+		hideLoading: false
+	})
+}

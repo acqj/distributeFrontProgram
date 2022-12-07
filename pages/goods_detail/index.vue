@@ -25,7 +25,7 @@
 								返利
 							</div>
 							<div style="color: #FA5151;font-size: 18px;font-weight: 700;margin-left: 5px;">
-								{{goodsObj.cosFee}}元
+								{{goodsObj.onlyFirstCommission}}元
 							</div>
 						</div>
 						<div class="flexRowAllWidthCls" style="justify-content: flex-start;color: #3d3d3d;font-size: 12px;margin-top: 10px;">
@@ -95,6 +95,7 @@
 					viewNum: "", //近30天浏览量
 					kolNum: "", //近30天推广人数
 					cover: "", //商品展示大图
+					onlyFirstCommission: "" //全额佣金(除去抖音和平台)
 				},
 				swiperStyleStr: "width:100%;",
 				bottomImgStyle: "width: 100%;text-align: center;margin-top: 10px;",
@@ -238,6 +239,7 @@
 						this.goodsObj.viewNum = resData.viewNum;
 						this.goodsObj.kolNum = resData.kolNum;
 						this.goodsObj.cover = resData.cover;
+						this.goodsObj.onlyFirstCommission = resData.onlyFirstCommission;
 					}else{
 						wx.showToast({
 							title: data.data.msg,

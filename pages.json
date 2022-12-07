@@ -65,7 +65,19 @@
 		{
 			"path": "pages/bankCard_info/index",
 			"style": {
+				"navigationBarTitleText": "绑定银行卡"
+			}
+		},
+		{
+			"path": "pages/bankCard/index",
+			"style": {
 				"navigationBarTitleText": "银行卡信息"
+			}
+		},
+		{
+			"path": "pages/lowerLevel_total/index",
+			"style": {
+				"navigationBarTitleText": "下级佣金汇总"
 			}
 		}
 	],

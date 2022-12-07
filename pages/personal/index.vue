@@ -7,7 +7,7 @@
 		<div style="margin-top: 10px;color: #3d3d3d;font-size: 14px;">
 			{{nickName}}
 		</div>
-		<div class="flexRowAllWidthCls" style="margin-top: 10px;">
+		<!-- <div class="flexRowAllWidthCls" style="margin-top: 10px;">
 			<div class="flexRowCls" style="color: #FF8F1F;">
 				<uni-icons type="star-filled" size="15" color="#FF8F1F"></uni-icons>
 				<div style="margin-left: 2px;">一级代理</div>
@@ -16,7 +16,7 @@
 				<uni-icons type="star-filled" size="15" color="silver"></uni-icons>
 				<div style="margin-left: 2px;color:silver;">二级代理</div>
 			</div>
-		</div>
+		</div> -->
 		<div class="flexRowCls" style="background-color: #fff;border-radius: 10px;width: 80%;margin-top: 20px;">
 			<div class="flexRowCls" style="width: 85%;margin: 10px 0;" @click="gotoRelation">
 				<div style="color: #3d3d3d;font-size: 14px;flex: 1;">
@@ -107,8 +107,11 @@
 		methods: {
 			...mapActions(['getUserOpenId', 'createUser', 'getUserInfo']),
 			gotoBankCardInfo(){
+				// uni.navigateTo({
+				// 	url:"/pages/bankCard_info/index"
+				// })
 				uni.navigateTo({
-					url:"/pages/bankCard_info/index"
+					url:"/pages/bankCard/index"
 				})
 			},
 			updateLocalUserInfo(){
@@ -152,7 +155,7 @@
 						}else{
 							wx.showToast({
 								title: "获取用户信息失败",
-								icon: "none",
+								icon: "error",
 								duration: 2000
 							})
 						}
@@ -160,7 +163,7 @@
 				}).catch(err => {
 					wx.showToast({
 						title: "获取用户信息失败，网络错误",
-						icon: "none",
+						icon: "error",
 						duration: 2000,
 					})
 				})
@@ -192,7 +195,7 @@
 											  //拒绝授权
 											  wx.showToast({
 												title: "获取失败",
-												icon: "none",
+												icon: "error",
 												duration: 2000,
 												});
 											},
