@@ -1,30 +1,30 @@
 <template>
 	<div class="flexColAllWidthCls">
-		<div style="margin: 10px 0;width: 90%;">
+		<div style="margin: 10px 0;width: 95%;">
 			<!-- <uni-easyinput type="search" suffixIcon="search"  v-model="searchGoodsName" placeholder="搜索更多折扣" @iconClick="searchGoodsClick"></uni-easyinput> -->
 			<div class="flexRowAllWidthCls" style="background-color: #fff;border-radius: 5px;">
 				<uni-icons type="search" size="15"></uni-icons>
 				<input style="background-color: #fff;height: 40px;width: 90%;" confirm-type="search" placeholder="请输入搜索内容" v-model="searchGoodsName" @confirm="searchGoodsClick"/>
 			</div>
 		</div>
-		<div style="margin-top: 10px;border-radius: 10px;width: 90%;background-color: #fff;">
+		<div style="margin-top: 10px;border-radius: 10px;width: 95%;background-color: #fff;">
 			<div class="flexColCls" style="margin: 10px;">
 				<div style="color: #3D3D3D;font-size: 16px;font-weight: 700;width: 100%;text-align: left;">
 					今日活动专区
 				</div>
-				<div style="width: 100%;margin-top: 10px;">
+				<div style="width: 100%;margin-top: 15px;">
 					<SwiperChannel :channelList="channelList" :col="2" style="width: 100%;"></SwiperChannel>
 				</div>
 			</div>
 		</div>
 		<!-- <button type="default" @click="getData">通过方法跳转到about页面</button> -->
-		<div class="flexColCls" style="width: 90%;">
+		<div class="flexColCls" style="width: 95%;">
 			<div style="color: #3D3D3D;font-size: 16px;font-weight: 700;margin-top: 20px;width: 100%;text-align: left;margin-bottom: 10px;">
 				今日优选
 			</div>
-			<div @click="gotoGoodsDetail(item.id)" class="flexRowAllWidthCls" v-for="item in bestGoodsList" :key="item.id" style="background-color: #fff;border-radius: 10px;margin-bottom: 10px;justify-content: flex-start;">
+			<div @click="gotoGoodsDetail(item.id)" class="flexRowAllWidthCls" v-for="item in bestGoodsList" :key="item.id" style="background-color: #fff;border-radius: 10px;margin-bottom: 10px;align-items: flex-start;">
 				<div style="margin: 10px;">
-					<image :src="item.cover" style="width: 150rpx;height: 150rpx;"></image>
+					<image :src="item.cover" style="width: 200rpx;height: 204rpx;"></image>
 				</div>
 				<div class="flexColCls" style="margin: 10px;margin-left: 0px;align-items: flex-start;flex: 1;">
 					<div style="color: #3d3d3d;font-size: 14px;font-weight: 700;">

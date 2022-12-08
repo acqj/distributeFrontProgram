@@ -1,6 +1,6 @@
 <template>
 	<div class="flexColAllWidthCls">
-		<div class="flexColAllWidthCls" style="width: 90%;">
+		<div class="flexColAllWidthCls" style="width: 95%;">
 			<div id="topDiv" class="flexColAllWidthCls">
 				<div v-if="isShowChannelName" style="font-size: 20px;color: #3d3d3d;font-weight: 700;">
 					{{channelName}}
@@ -13,9 +13,9 @@
 			</div>
 			<!-- <div class="flexColAllWidthCls" :style="styleStr"> -->
 			<scroll-view :scroll-top="scrollTop" scroll-y="true" :style="styleStr">
-				<div class="flexRowAllWidthCls" v-for="item in goodsList" :key="item.id" style="justify-content: flex-start;background-color: #fff;border-radius: 10px;margin-bottom: 10px;">
+				<div class="flexRowAllWidthCls" v-for="item in goodsList" :key="item.id" style="align-items: flex-start;background-color: #fff;border-radius: 10px;margin-bottom: 10px;">
 					<div style="margin: 10px;">
-						<image :src="item.cover" style="width: 150rpx;height: 150rpx;"></image>
+						<image :src="item.cover" style="width: 200rpx;height: 204rpx;"></image>
 					</div>
 					<div @click="gotoGoodsDetail(item.id)" class="flexColCls" style="flex: 1;margin: 10px;margin-left: 0px;align-items: flex-start;">
 						<div style="color: #3d3d3d;font-size: 14px;font-weight: 700;">

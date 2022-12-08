@@ -1,6 +1,6 @@
 <template>
   <view style="width: 100%;">
-    <swiper :indicator-dots="isShowDot && showDot" class="swiper" :style="{height:(180*col)+'rpx'}">
+    <swiper :indicator-dots="isShowDot && showDot" class="swiper" :style="{height:(200*col)+'rpx'}">
       <swiper-item v-for="(item, index) in listdivInfo" :key="index" class="swiper-item">
         <view v-for="(child, code) in item" class="smallItem" :key="code" :style="{ width: width + '%;' }" @click="gotoGoodsListPage(child.id, child.channelName)">
 			<!-- <div class="flexColAllWidthCls" style="background-color: #FFEDEF;border-radius: 10rpx;">
@@ -34,7 +34,7 @@ export default {
     //一行排列数
     nums: {
       type: Number,
-      default: 3,
+      default: 4,
     },
 
     //排列行数
@@ -118,7 +118,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 16rpx 0;
+    // margin: 16rpx 0;
     overflow: hidden;
 
     image {
@@ -128,7 +128,7 @@ export default {
 
     .name {
 	  color: #3d3d3d;
-	  font-weight: bold;
+	  // font-weight: bold;
       margin-top: 8rpx;
       font-size: 24rpx;
     }
