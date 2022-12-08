@@ -1,13 +1,12 @@
 // 设置公共路径
-const baseUrl = "https://192.168.1.11";
+// const baseUrl = "https://192.168.0.15"; //本地环境
+const baseUrl = "https://www.ihorizons.cn"; //服务器环境
 
 //url, method, data, callback, hideLoading
 const request = (params) => {
 	console.log("paramsparams", params);
 	const headers = {
 		'Content-Type': 'application/json',
-		// 'x-requested-with': 'XMLHttpRequest',
-		'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50IjoiZ3VveHVhbiIsImNsaWVudFR5cGUiOjEsImlhdCI6MTY2OTAyMjU2MywiZXhwIjoxNjY5MDI5NzYzfQ.5YTQa5iOZP4Zi_yRL9xYwf_tI_I5d7nU4dOrhbfCBQg'
 	};
 	
 	// 如果调用接口不明确不显示 loading

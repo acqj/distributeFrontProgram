@@ -1,7 +1,7 @@
 // #ifndef VUE3
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { getUserByOpenId } from '@/api/userApi';
+import { getUserByOpenId, getOpenId } from '@/api/userApi';
 Vue.use(Vuex)
 const store = new Vuex.Store({
 // #endif
@@ -97,28 +97,37 @@ const store = createStore({
 						provider: "weixin",
 						success: (data) => {
 							commit('login')
-							let appid = "wx0724a71a0913f7ae";
-							let secret = "33213cffc09e57eaf7d946f8c30d7788";
-							let url =
-								"https://api.weixin.qq.com/sns/jscode2session?appid=" +
-								appid +
-								"&secret=" +
-								secret +
-								"&js_code=" +
-								data.code +
-								"&grant_type=authorization_code";
-							uni.request({
-								url: url, // 请求路径
-								success: async(r) => {
-								  console.log("r", r);
-								  console.info("用户的openId", r.data.openid);
-								  commit('setopenId', r.data.openid)
-								 // var resData = await this.getUserInfo(r.data.openid);
-								 var resData = await dispatch('getUserInfo', state.openId)
-								 resolve({openId: state.openId, userCode: resData.code, userMsg: resData.msg});
-								},
-							  });
-							// commit('setopenId', openId)
+							getOpenId({userCode: data.code}).then(async(data) => {
+								if(data.data.code == 0){
+									commit('setopenId', data.data.openId);
+									var resData = await dispatch('getUserInfo', state.openId)
+									resolve({openId: state.openId, userCode: resData.code, userMsg: resData.msg});
+								}else{
+									reject(data);
+								}
+							}).catch(err => {
+								reject(err);
+							})
+							// let appid = "wx0724a71a0913f7ae";
+							// let secret = "33213cffc09e57eaf7d946f8c30d7788";
+							// let url =
+							// 	"https://api.weixin.qq.com/sns/jscode2session?appid=" +
+							// 	appid +
+							// 	"&secret=" +
+							// 	secret +
+							// 	"&js_code=" +
+							// 	data.code +
+							// 	"&grant_type=authorization_code";
+							// uni.request({
+							// 	url: url, // 请求路径
+							// 	success: async(r) => {
+							// 	  console.log("r", r);
+							// 	  console.info("用户的openId", r.data.openid);
+							// 	  commit('setopenId', r.data.openid)
+							// 	 var resData = await dispatch('getUserInfo', state.openId)
+							// 	 resolve({openId: state.openId, userCode: resData.code, userMsg: resData.msg});
+							// 	},
+							//   });
 							
 						},
 						fail: (err) => {

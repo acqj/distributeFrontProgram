@@ -44,3 +44,12 @@ export function updateUserInfo(data){
 		hideLoading: false
 	})
 }
+
+export function getOpenId(data){
+	return request({
+		url: "/appletsUser/getOpenId",
+		method: "post",
+		data: data,
+		hideLoading: false
+	})
+}
