@@ -79,6 +79,12 @@
 			"style": {
 				"navigationBarTitleText": "下级佣金汇总"
 			}
+		},
+		{
+			"path": "pages/userInfo/index",
+			"style": {
+				"navigationBarTitleText": "完善信息"
+			}
 		}
 	],
 	"globalStyle": {

@@ -1,7 +1,11 @@
 <template>
 	<div class="flexColAllWidthCls">
 		<div style="margin: 10px 0;width: 90%;">
-			<uni-easyinput type="search" suffixIcon="search"  v-model="searchGoodsName" placeholder="搜索更多折扣" @iconClick="searchGoodsClick"></uni-easyinput>
+			<!-- <uni-easyinput type="search" suffixIcon="search"  v-model="searchGoodsName" placeholder="搜索更多折扣" @iconClick="searchGoodsClick"></uni-easyinput> -->
+			<div class="flexRowAllWidthCls" style="background-color: #fff;border-radius: 5px;">
+				<uni-icons type="search" size="15"></uni-icons>
+				<input style="background-color: #fff;height: 40px;width: 90%;" confirm-type="search" placeholder="请输入搜索内容" v-model="searchGoodsName" @confirm="searchGoodsClick"/>
+			</div>
 		</div>
 		<div style="margin-top: 10px;border-radius: 10px;width: 90%;background-color: #fff;">
 			<div class="flexColCls" style="margin: 10px;">
@@ -271,57 +275,56 @@
 				}
 			},
 			getWXUserInfo(){
-				uni.showModal({
-					title:'授权',
-					content:"是否授权",
-					success: (resData) => {
-						if(resData.confirm){
-							uni.getUserProfile({
-								desc: "获取你的昵称、头像信息",//必填项，声明获取用户个人信息后的用途，不超过30个字符
-								success: (res) => {
-								  const userInfo = res.userInfo;
-								  this.wxNick = userInfo.nickName;
-								  this.wxAvatar = userInfo.avatarUrl;
-								  this.createUserFunc(1);
-								},
-								fail: (res) => {
-									this.wxNick = "";
-									this.wxAvatar = "";
-									this.createUserFunc(0);
-									// console.log(res);
-								  //拒绝授权
-								  wx.showToast({
-									title: "获取失败",
-									icon: "none",
-									duration: 2000,
-									});
-								 //  return;
-								},
-							});
-						}else{
-							this.wxNick = "";
-							this.wxAvatar = "";
-							this.createUserFunc(0);
-						}
-					}
-				})
+				this.createUserFunc(0);
+				// uni.showModal({
+				// 	title:'授权',
+				// 	content:"是否授权",
+				// 	success: (resData) => {
+				// 		if(resData.confirm){
+				// 			uni.getUserProfile({
+				// 				desc: "获取你的昵称、头像信息",//必填项，声明获取用户个人信息后的用途，不超过30个字符
+				// 				success: (res) => {
+				// 				  const userInfo = res.userInfo;
+				// 				  this.wxNick = userInfo.nickName;
+				// 				  this.wxAvatar = userInfo.avatarUrl;
+				// 				  this.createUserFunc(1);
+				// 				},
+				// 				fail: (res) => {
+				// 					this.wxNick = "";
+				// 					this.wxAvatar = "";
+				// 					this.createUserFunc(0);
+				// 				  //拒绝授权
+				// 				  wx.showToast({
+				// 					title: "获取失败",
+				// 					icon: "none",
+				// 					duration: 2000,
+				// 					});
+				// 				},
+				// 			});
+				// 		}else{
+				// 			this.wxNick = "";
+				// 			this.wxAvatar = "";
+				// 			this.createUserFunc(0);
+				// 		}
+				// 	}
+				// })
 			},
 			createUserFunc(isAuthorization){
 				var params = {
 					openId: this.currentOpenId,
-					wxNick: this.wxNick,
-					wxAvatar: this.wxAvatar,
+					wxNick: "微信用户",
+					wxAvatar: "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132",
 					parentOpenId: this.parentOpenId,
 					isAuthorization: isAuthorization
 				}
 				createUser(params).then(data => {
 					var resData = data.data;
 					if(resData.code == 0){
-						wx.showToast({
-							title: "新增用户成功",
-							icon: "none",
-							duration: 2000,
-						});
+						// wx.showToast({
+						// 	title: "新增用户成功",
+						// 	icon: "none",
+						// 	duration: 2000,
+						// });
 						this.getUserInfo(this.currentOpenId).then(data => {
 							if(data.code == 0){
 								if(this.$store.state.currentUserInfo.parent_openid){
@@ -355,5 +358,16 @@
 <style>
 	.searchCls{
 		border-radius: 10px;
+	}
+	.iconfont {
+	  font-family: "iconfont" !important;
+	  font-size: 16px;
+	  font-style: normal;
+	  -webkit-font-smoothing: antialiased;
+	  -moz-osx-font-smoothing: grayscale;
+	}
+	
+	.icon-link {
+	  content: "\e772";
 	}
 </style>

@@ -2,7 +2,8 @@
 	<div class="flexColAllWidthCls" style="justify-content: flex-start;">
 		<div style="position: relative;">
 			<image :src="avatar" style="height: 80px;width: 80px;border-radius: 40px;"></image>
-			<div v-if="!isAuth" @click="getAuthClick" size="mini" style="text-align: center;width: 80px;position: absolute;top: 35%;background-color: limegreen;color: #fff;">点击授权</div>
+			<!-- <button @click="getAuthClick">授权登录</button> -->
+			<div v-if="!isAuth" @click="gotoUserInfo" size="mini" style="text-align: center;width: 80px;position: absolute;top: 35%;background-color: limegreen;color: #fff;">完善信息</div>
 		</div>
 		<div style="margin-top: 10px;color: #3d3d3d;font-size: 14px;">
 			{{nickName}}
@@ -79,10 +80,7 @@
 				parentOpenId: ""
 			}
 		},
-		onLoad(e) {
-			console.log("currentUserInfocurrentUserInfocurrentUserInfo");
-			console.log(this.currentUserInfo);
-			
+		onLoad(e) {			
 			if(e.shareFromOpenId){
 				//标识带有分享自某个openId 需记录上一级
 				this.parentOpenId = e.shareFromOpenId;
@@ -96,7 +94,6 @@
 			}
 		},
 		onShow() {
-			console.log('oooooooooooooooshow');
 			if(!this.$store.state.openId){
 				this.getCurrentUserInfo();
 			}else{
@@ -106,6 +103,11 @@
 		},
 		methods: {
 			...mapActions(['getUserOpenId', 'createUser', 'getUserInfo']),
+			gotoUserInfo(){
+				uni.navigateTo({
+					url:"/pages/userInfo/index"
+				})
+			},
 			gotoBankCardInfo(){
 				// uni.navigateTo({
 				// 	url:"/pages/bankCard_info/index"
@@ -119,8 +121,35 @@
 					if(data.code == 0){
 						if(this.$store.state.currentUserInfo.id){
 							this.currentUserInfo = this.$store.state.currentUserInfo;
-							this.nickName = this.currentUserInfo.wx_nick;
-							this.avatar = this.currentUserInfo.wx_avatar;
+							// this.nickName = this.currentUserInfo.wx_nick;
+							// this.avatar = this.currentUserInfo.wx_avatar;
+							// if(this.currentUserInfo.is_wx_authorization && this.currentUserInfo.is_wx_authorization != 0){
+							// 	//已授权获取用户名以及头像等详细信息
+							// 	this.nickName = this.currentUserInfo.wx_nick;
+							// 	this.avatar = this.currentUserInfo.wx_avatar;
+							// }else{
+							// 	console.log('uuuuuuuuuuuuuuuuuuuuuuuuupdate');
+							// 	if(!this.currentUserInfo.wx_nick)
+							// 	{
+							// 		this.nickName = "微信用户";
+							// 	}else{
+							// 		this.nickName
+							// 	}
+							// 	if(!this.currentUserInfo.wx_avatar){
+							// 		this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
+							// 	}
+							// }
+							if(!this.currentUserInfo.wx_nick)
+							{
+								this.nickName = "微信用户";
+							}else{
+								this.nickName = this.currentUserInfo.wx_nick;
+							}
+							if(!this.currentUserInfo.wx_avatar){
+								this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
+							}else{
+								this.avatar = this.currentUserInfo.wx_avatar;
+							}
 							if(this.currentUserInfo.is_wx_authorization != 1){
 								this.isAuth = false;
 							}else{
@@ -134,18 +163,29 @@
 						}
 						var resUserData = await this.createUser(this.$store.state.openId, this.parentOpenId);
 						if(resUserData.code == 0){
-							if(this.currentUserInfo.is_wx_authorization && this.currentUserInfo.is_wx_authorization != 0){
-								//已授权获取用户名以及头像等详细信息
-								this.nickName = this.currentUserInfo.wx_nick;
-								this.avatar = this.currentUserInfo.wx_avatar;
+							// if(this.currentUserInfo.is_wx_authorization && this.currentUserInfo.is_wx_authorization != 0){
+							// 	//已授权获取用户名以及头像等详细信息
+							// 	this.nickName = this.currentUserInfo.wx_nick;
+							// 	this.avatar = this.currentUserInfo.wx_avatar;
+							// }else{
+							// 	if(!this.currentUserInfo.wx_nick)
+							// 	{
+							// 		this.nickName = "微信用户";
+							// 	}
+							// 	if(!this.currentUserInfo.wx_avatar){
+							// 		this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
+							// 	}
+							// }
+							if(!this.currentUserInfo.wx_nick)
+							{
+								this.nickName = "微信用户";
 							}else{
-								if(!this.currentUserInfo.wx_nick)
-								{
-									this.nickName = "微信用户";
-								}
-								if(!this.currentUserInfo.wx_avatar){
-									this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
-								}
+								this.nickName = this.currentUserInfo.wx_nick;
+							}
+							if(!this.currentUserInfo.wx_avatar){
+								this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
+							}else{
+								this.avatar = this.currentUserInfo.wx_avatar;
 							}
 							if(this.currentUserInfo.is_wx_authorization != 1){
 								this.isAuth = false;
@@ -175,41 +215,64 @@
 						this.currentOpenId = res.openId;
 					}
 				}
-				uni.showModal({
-					title:'授权',
-					content:"是否授权",
-					success: (resData) => {
-						if(resData.confirm){
-							wx.getSetting({
-								success:(res) => {
-									if (res.authSetting['scope.userInfo']) {
-										wx.getUserProfile({
-											desc: "获取你的昵称、头像信息",//必填项，声明获取用户个人信息后的用途，不超过30个字符
-											success: (res) => {
-											  const userInfo = res.userInfo;
-											  this.nickName = userInfo.nickName;
-											  this.avatar = userInfo.avatarUrl;
-											  this.updateUser();//授权成功更新用户表
-											},
-											fail: (res) => {
-											  //拒绝授权
-											  wx.showToast({
-												title: "获取失败",
-												icon: "error",
-												duration: 2000,
-												});
-											},
-										});
-									}
-								}
-							})
-						}else{
-							// this.nickName = "";
-							// this.avatar = "";
-							// this.createUserFunc(0);
-						}						
-					}
+				wx.getSetting({
+					success:(res) => {
+						if (res.authSetting['scope.userInfo']) {
+							uni.getUserProfile({
+								desc: "获取你的昵称、头像信息",//必填项，声明获取用户个人信息后的用途，不超过30个字符
+								success: (res) => {
+								  const userInfo = res.userInfo;
+								  this.nickName = userInfo.nickName;
+								  this.avatar = userInfo.avatarUrl;
+								  this.updateUser();//授权成功更新用户表
+								},
+								fail: (res) => {
+									console.log('faillllllllllllllllllllllllll');
+									console.log(res);
+								  //拒绝授权
+								  wx.showToast({
+									title: "获取失败",
+									icon: "error",
+									duration: 2000,
+									});
+								},
+							});
+						}
+					},
 				})
+				
+				// uni.showModal({
+				// 	title:'授权',
+				// 	content:"是否授权",
+				// 	success: (resData) => {
+				// 		if(resData.confirm){
+				// 			wx.getSetting({
+				// 				success:(res) => {
+				// 					if (res.authSetting['scope.userInfo']) {
+				// 						wx.getUserProfile({
+				// 							desc: "获取你的昵称、头像信息",//必填项，声明获取用户个人信息后的用途，不超过30个字符
+				// 							success: (res) => {
+				// 							  const userInfo = res.userInfo;
+				// 							  this.nickName = userInfo.nickName;
+				// 							  this.avatar = userInfo.avatarUrl;
+				// 							  this.updateUser();//授权成功更新用户表
+				// 							},
+				// 							fail: (res) => {
+				// 							  //拒绝授权
+				// 							  wx.showToast({
+				// 								title: "获取失败",
+				// 								icon: "error",
+				// 								duration: 2000,
+				// 								});
+				// 							},
+				// 						});
+				// 					}
+				// 				}
+				// 			})
+				// 		}else{
+				// 		}						
+				// 	}
+				// })
 			},
 			updateUser(){
 				var params = {
@@ -276,18 +339,31 @@
 			},
 			async getCurrentUserInfo(){
 				if(this.currentOpenId && this.currentUserInfo.id){
-					if(this.currentUserInfo.is_wx_authorization && this.currentUserInfo.is_wx_authorization != 0){
-						//已授权获取用户名以及头像等详细信息
-						this.nickName = this.currentUserInfo.wx_nick;
-						this.avatar = this.currentUserInfo.wx_avatar;
+					// if(this.currentUserInfo.is_wx_authorization && this.currentUserInfo.is_wx_authorization != 0){
+					// 	//已授权获取用户名以及头像等详细信息
+					// 	this.nickName = this.currentUserInfo.wx_nick;
+					// 	this.avatar = this.currentUserInfo.wx_avatar;
+					// }else{
+					// 	console.log('ccccccccccccccccccccc');
+					// 	if(!this.currentUserInfo.wx_nick)
+					// 	{
+					// 		console.log('111111111111111111111111111');
+					// 		this.nickName = "微信用户";
+					// 	}
+					// 	if(!this.currentUserInfo.wx_avatar){
+					// 		this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
+					// 	}
+					// }
+					if(!this.currentUserInfo.wx_nick)
+					{
+						this.nickName = "微信用户";
 					}else{
-						if(!this.currentUserInfo.wx_nick)
-						{
-							this.nickName = "微信用户";
-						}
-						if(!this.currentUserInfo.wx_avatar){
-							this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
-						}
+						this.nickName = this.currentUserInfo.wx_nick;
+					}
+					if(!this.currentUserInfo.wx_avatar){
+						this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
+					}else{
+						this.avatar = this.currentUserInfo.wx_avatar;
 					}
 					if(this.currentUserInfo.is_wx_authorization != 1){
 						this.isAuth = false;
@@ -298,18 +374,29 @@
 					var res = await this.getUserOpenId();
 					if(res.openId){
 						if(res.userCode == 0){
-							if(this.currentUserInfo.is_wx_authorization && this.currentUserInfo.is_wx_authorization != 0){
-								//已授权获取用户名以及头像等详细信息
-								this.nickName = this.currentUserInfo.wx_nick;
-								this.avatar = this.currentUserInfo.wx_avatar;
+							// if(this.currentUserInfo.is_wx_authorization && this.currentUserInfo.is_wx_authorization != 0){
+							// 	//已授权获取用户名以及头像等详细信息
+							// 	this.nickName = this.currentUserInfo.wx_nick;
+							// 	this.avatar = this.currentUserInfo.wx_avatar;
+							// }else{
+							// 	if(!this.currentUserInfo.wx_nick)
+							// 	{
+							// 		this.nickName = "微信用户";
+							// 	}
+							// 	if(!this.currentUserInfo.wx_avatar){
+							// 		this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
+							// 	}
+							// }
+							if(!this.currentUserInfo.wx_nick)
+							{
+								this.nickName = "微信用户";
 							}else{
-								if(!this.currentUserInfo.wx_nick)
-								{
-									this.nickName = "微信用户";
-								}
-								if(!this.currentUserInfo.wx_avatar){
-									this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
-								}
+								this.nickName = this.currentUserInfo.wx_nick;
+							}
+							if(!this.currentUserInfo.wx_avatar){
+								this.avatar = "https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132";
+							}else{
+								this.avatar = this.currentUserInfo.wx_avatar;
 							}
 							if(this.currentUserInfo.is_wx_authorization != 1){
 								this.isAuth = false;

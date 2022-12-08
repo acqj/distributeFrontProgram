@@ -110,8 +110,6 @@
 			}
 		},
 		onLoad(e) {
-			console.log('eeeeeeeeeeeeee');
-			console.log(e);
 			if(e.isNeedBack){
 				this.isNeedBack = e.isNeedBack;
 			}
@@ -131,7 +129,6 @@
 			getData(){
 				getBankCardInfo({openId: this.currentOpenId}).then(data => {
 					if(data.data.code == 0){
-						console.log(data.data);
 						var resData = data.data.data;
 						if(resData){
 							this.bankCardId = resData.id;
@@ -155,8 +152,6 @@
 			},
 			submitBtnClick(){
 				this.$refs.bankCardFormRef.validate().then(res => {
-					console.log('rrrrrrrrrrrrrrres');
-					console.log(res);
 					var params = {
 						openId: this.currentOpenId,
 						bankCardNo: res.bankCardNo,
@@ -165,7 +160,6 @@
 						idCardNo: res.idCardNo
 					}
 					addBankCardInfo(params).then(data => {
-						console.log(data);
 						if(data.data.code == 0){
 							wx.showToast({
 								title: "绑定成功",
