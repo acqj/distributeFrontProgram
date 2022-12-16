@@ -6,12 +6,15 @@
 					<div style="color: #3d3d3d;flex: 1;text-align: left;font-weight: 700;">
 						我的佣金
 					</div>
-					<div style="color: #666666;" @click="openDialog">
-						规则说明
+					<div style="color: #666666;" @click="gotoLowerLevelTotal">
+						二级代理佣金汇总
 					</div>
+					<!-- <div>
+						<button size="mini" type="warn" @click="gotoLowerLevelTotal">二级代理佣金汇总</button>
+					</div> -->
 				</div>
 				<div class="flexRowAllWidthCls" style="justify-content: flex-start;align-items: flex-end;margin-top: 10px;">
-					<div class="flexRowCls" style="flex:1;">
+					<div class="flexRowCls" style="flex:1;align-items: flex-end;">
 						<div style="color: #FA5151;font-size: 30px;">
 							{{totalCommission}}
 						</div>
@@ -19,9 +22,9 @@
 							￥
 						</div>
 					</div>
-					<div>
+					<!-- <div>
 						<button size="mini" type="warn" @click="gotoLowerLevelTotal">二级代理佣金汇总</button>
-					</div>
+					</div> -->
 				</div>
 				<div class="flexRowAllWidthCls" style="margin-top: 20px;color: #666666;">
 					<div style="flex:1;">
