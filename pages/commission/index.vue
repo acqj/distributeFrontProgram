@@ -41,7 +41,7 @@
 						</div>
 						<div style="margin-left: 5px;">
 							<button v-if="isCanCashOut" type="warn" size="mini" @click="cashoutBtnClick">去提现</button>
-							<button type="warn" size="mini" :disabled="true">去提现</button>
+							<button v-else type="warn" size="mini" :disabled="true">去提现</button>
 						</div>
 					</div>
 				</div>
@@ -59,9 +59,9 @@
 		<div class="flexRowAllWidthCls" style="margin-top: 20px;">
 			<uni-segmented-control :current="currentTab" :values="tabItems" @clickItem="onClickItem" styleType="text" style="width: 50%;"></uni-segmented-control>
 		</div>
-		<div v-if="currentTab == 0" class="flexColAllWidthCls" style="margin-top: 10px;">
-			<div v-if="orderList && orderList.length>0">
-				<div v-for="item in orderList" :key="item.orderId" class="flexRowCls" style="width: 90%;background-color: #fff;border-radius: 10px;margin-bottom: 10px;">
+		<div v-if="currentTab == 0" class="flexColAllWidthCls">
+			<div v-if="orderList && orderList.length>0" class="flexColAllWidthCls">
+				<div v-for="item in orderList" :key="item.orderId" class="flexRowAllWidthCls" style="width: 95%;margin-top: 10px;background-color: #fff;border-radius: 5px;">
 					<div class="flexRowCls" style="margin: 10px;">
 						<div>
 							<image :src="item.productImg" style="width: 60px;height: 60px;"></image>
