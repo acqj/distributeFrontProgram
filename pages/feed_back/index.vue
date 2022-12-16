@@ -1,7 +1,7 @@
 <template>
 	<div class="flexColAllWidthCls" style="height: 100%;">
 		<div class="flexColCls" style="width: 90%;height: 100%;justify-content: flex-start;margin-top: 10px;">
-			<textarea class="textarea" v-model="feedBackTxt" style="height: 40%;background-color: #fff;width: 100%;"></textarea>
+			<textarea class="textarea" v-model="feedBackTxt" style="border-radius: 5px;height: 40%;background-color: #fff;width: 100%;"></textarea>
 			<button :loading="btnLoading" :disabled="btnDisabled" type="primary" style="margin-top: 20px;width: 100%;" @click="submitFeedBack">提交反馈</button>
 		</div>
 	</div>
