@@ -22,8 +22,30 @@
 				</uni-forms-item> -->
 			</uni-forms>
 		</div>
+		<div class="flexRowAllWidthCls" style="padding-left: 10px;margin: 10px 0;justify-content: flex-start;">
+			<!-- <checkbox value="cb" :checked="isChecked" @change="cbChange"/> -->
+			<checkbox-group @change="cbChange" style="width:auto;">
+				<label style="padding-right: 5px;">
+					<checkbox value="cb" :checked="isChecked" color="#FFCC33"/>
+				</label>
+			</checkbox-group>
+			<div class="flexRowCls" style="justify-content: flex-start;flex:1;">
+				<div>
+					我已仔细阅读并同意
+				</div>
+				<div style="color: #409eff;" @click="gotoAgreement('用户服务协议')">
+					《用户服务协议》
+				</div>
+				<div>
+					和	
+				</div>
+				<div style="color: #409eff;" @click="gotoAgreement('隐私政策')">
+					《隐私政策》
+				</div>
+			</div>
+		</div>
 		<div style="width: 50%;margin-top: 20px;">
-			<button type="warn" @click="submitBtnClick">提交</button>
+			<button type="warn" :disabled="submitBtnDisabled" @click="submitBtnClick">提交</button>
 		</div>
 	</div>
 </template>
@@ -34,6 +56,8 @@
 		name: "BankCardInfo",
 		data(){
 			return {
+				submitBtnDisabled: true,
+				isChecked: false,
 				isNeedBack: false,
 				currentOpenId: this.$store.state.openId,
 				bankCardId: "",
@@ -126,6 +150,24 @@
 			});
 		},
 		methods: {
+			gotoAgreement(pageTitle){
+				uni.navigateTo({
+					url:"/pages/agreement/index?title=" + pageTitle
+				})
+			},
+			cbChange(e){
+				console.log('eeeee');
+				console.log(e);
+				if(e.detail.value && e.detail.value.length > 0){
+					if(e.detail.value[0] == "cb"){
+						this.submitBtnDisabled = false;
+					}else{
+						this.submitBtnDisabled = true;
+					}
+				}else{
+					this.submitBtnDisabled = true;
+				}
+			},
 			getData(){
 				getBankCardInfo({openId: this.currentOpenId}).then(data => {
 					if(data.data.code == 0){
