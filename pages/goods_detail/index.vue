@@ -15,7 +15,7 @@
 						<div class="flexRowAllWidthCls" style="margin-top: 20px;">
 							<div class="flexRowCls" style="flex:1;justify-content: flex-start;">
 								<div style="color: #3d3d3d;font-size: 14px;">
-									原价
+									售价
 								</div>
 								<div style="color: #FA5151;font-size: 18px;font-weight: 700;margin-left: 5px;">
 									{{goodsObj.price}}元
