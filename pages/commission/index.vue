@@ -1,66 +1,56 @@
 <template>
 	<div class="flexColAllWidthCls" style="justify-content: flex-start;">
-		<div class="flexRowCls" style="width: 90%;background-color: #fff;border-radius: 10px;">
+		<div class="flexRowCls" style="width: 95%;background-color: #fff;border-radius: 10px;">
 			<div class="flexColCls" style="width: 90%;margin-top: 10px;">
 				<div class="flexRowAllWidthCls" style="justify-content: flex-start;">
 					<div style="color: #3d3d3d;flex: 1;text-align: left;font-weight: 700;">
-						我的佣金
+						佣金合计
 					</div>
-					<div style="color: #666666;" @click="gotoLowerLevelTotal">
+					<div>
+						￥<span style="color: #FA5151;font-size: 25px;">{{totalCommission}}</span>
+					</div>
+					<!-- <div style="color: #666666;" @click="gotoLowerLevelTotal">
 						二级代理佣金汇总
-					</div>
-					<!-- <div>
-						<button size="mini" type="warn" @click="gotoLowerLevelTotal">二级代理佣金汇总</button>
 					</div> -->
-				</div>
-				<div class="flexRowAllWidthCls" style="justify-content: flex-start;align-items: flex-end;margin-top: 10px;">
-					<div class="flexRowCls" style="flex:1;align-items: flex-end;">
-						<div style="color: #FA5151;font-size: 30px;">
-							{{totalCommission}}
-						</div>
-						<div style="margin-left: 10px;color: #3d3d3d;">
-							￥
-						</div>
-					</div>
 					<!-- <div>
 						<button size="mini" type="warn" @click="gotoLowerLevelTotal">二级代理佣金汇总</button>
 					</div> -->
 				</div>
 				<div class="flexRowAllWidthCls" style="margin-top: 20px;color: #666666;">
 					<div style="flex:1;">
-						已提现：￥{{cashOutCommission}}
+						累计提现金额：
 					</div>
-					<div style="font-size: 10px;">
-						累计提现金额
+					<div>
+						￥{{cashOutCommission}}
 					</div>
 				</div>
 				<div class="flexRowAllWidthCls" style="margin-top: 10px;color: #666666;">
 					<div style="flex:1;">
-						未提现：￥{{unCashOutCommission}}
+						可提现金额：
 					</div>
 					<div class="flexRowCls">
-						<div style="font-size: 10px;">
-							可提现金额
-						</div>
-						<div style="margin-left: 5px;">
+						<div style="margin-right: 5px;">
 							<button v-if="isCanCashOut" type="warn" size="mini" @click="cashoutBtnClick">去提现</button>
 							<button v-else type="warn" size="mini" :disabled="true">去提现</button>
+						</div>
+						<div>
+							￥{{unCashOutCommission}}
 						</div>
 					</div>
 				</div>
 				<div class="flexRowAllWidthCls" style="margin-top: 10px;color: #666666;margin-bottom: 10px;">
 					<div style="flex:1;">
-						未结算：￥{{unSettledCommission}}
+						未结算金额：
 					</div>
-					<div style="font-size: 10px;">
-						已经产生订单，尚未结算金额
+					<div>
+						￥{{unSettledCommission}}
 					</div>
 				</div>
 			</div>
 		</div>
 		
 		<div class="flexRowAllWidthCls" style="margin-top: 20px;">
-			<uni-segmented-control :current="currentTab" :values="tabItems" @clickItem="onClickItem" styleType="text" style="width: 50%;"></uni-segmented-control>
+			<uni-segmented-control :current="currentTab" :values="tabItems" @clickItem="onClickItem" styleType="text" style="width: 80%;"></uni-segmented-control>
 		</div>
 		<div v-if="currentTab == 0" class="flexColAllWidthCls">
 			<div v-if="orderList && orderList.length>0" class="flexColAllWidthCls">
@@ -170,7 +160,7 @@
 				unCashOutCommission: "0",
 				unSettledCommission: "0",
 				currentOpenId: this.$store.state.openId,
-				tabItems: ["我的订单", "提现记录"],
+				tabItems: ["我的订单", "提现记录", "二级代理佣金"],
 				currentTab: 0,
 				orderList: [],
 				orderPageNum: 1,
