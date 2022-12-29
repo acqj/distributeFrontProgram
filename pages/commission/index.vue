@@ -1,20 +1,14 @@
 <template>
 	<div class="flexColAllWidthCls" style="justify-content: flex-start;">
 		<div class="flexRowCls" style="width: 95%;background-color: #fff;border-radius: 10px;">
-			<div class="flexColCls" style="width: 90%;margin-top: 10px;">
+			<div class="flexColCls" style="width: 90%;margin-top: 10px;font-size: 1.2rem;">
 				<div class="flexRowAllWidthCls" style="justify-content: flex-start;">
-					<div style="color: #3d3d3d;flex: 1;text-align: left;font-weight: 700;">
+					<div style="color: #3d3d3d;flex: 1;text-align: left;font-weight: 700;font-size: 30px;">
 						佣金合计
 					</div>
 					<div>
-						￥<span style="color: #FA5151;font-size: 25px;">{{totalCommission}}</span>
+						￥<span style="color: #FA5151;font-size: 30px;">{{totalCommission}}</span>
 					</div>
-					<!-- <div style="color: #666666;" @click="gotoLowerLevelTotal">
-						二级代理佣金汇总
-					</div> -->
-					<!-- <div>
-						<button size="mini" type="warn" @click="gotoLowerLevelTotal">二级代理佣金汇总</button>
-					</div> -->
 				</div>
 				<div class="flexRowAllWidthCls" style="margin-top: 20px;color: #666666;">
 					<div style="flex:1;">
@@ -26,24 +20,29 @@
 				</div>
 				<div class="flexRowAllWidthCls" style="margin-top: 10px;color: #666666;">
 					<div style="flex:1;">
+						未结算金额：
+					</div>
+					<div>
+						￥{{unSettledCommission}}
+					</div>
+				</div>
+				<div class="flexRowAllWidthCls" style="margin-top: 10px;color: #666666;">
+					<div style="flex:1;">
 						可提现金额：
 					</div>
 					<div class="flexRowCls">
-						<div style="margin-right: 5px;">
-							<button v-if="isCanCashOut" type="warn" size="mini" @click="cashoutBtnClick">去提现</button>
-							<button v-else type="warn" size="mini" :disabled="true">去提现</button>
-						</div>
 						<div>
 							￥{{unCashOutCommission}}
 						</div>
 					</div>
 				</div>
 				<div class="flexRowAllWidthCls" style="margin-top: 10px;color: #666666;margin-bottom: 10px;">
-					<div style="flex:1;">
-						未结算金额：
-					</div>
-					<div>
-						￥{{unSettledCommission}}
+					<div style="flex:1;"></div>
+					<div class="flexRowCls">
+						<div>
+							<button class="cashbtn" v-if="isCanCashOut" type="warn" size="normal" @click="cashoutBtnClick">去提现</button>
+							<button class="cashbtn" v-else type="warn" size="normal" :disabled="true">去提现</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -54,7 +53,7 @@
 		</div>
 		<div v-if="currentTab == 0" class="flexColAllWidthCls">
 			<div v-if="orderList && orderList.length>0" class="flexColAllWidthCls">
-				<div v-for="item in orderList" :key="item.orderId" class="flexRowAllWidthCls" style="width: 95%;margin-top: 10px;background-color: #fff;border-radius: 5px;">
+				<div v-for="item in orderList" :key="item.orderId" class="flexRowAllWidthCls" style="width: 95%;margin-top: 10px;background-color: #fff;border-radius: 10px;">
 					<div class="flexRowCls" style="margin: 10px;">
 						<div>
 							<image :src="item.productImg" style="width: 60px;height: 60px;"></image>
@@ -116,8 +115,30 @@
 				暂无数据
 			</div>
 		</div>
+		<div v-if="currentTab == 2" class="flexColAllWidthCls" style="margin-top: 10px;">
+			<div v-if="lowerLevelData && lowerLevelData.length > 0" class="flexColCls" style="width: 90%;background-color: #fff;padding:10px;">
+				<div v-for="(item, index) in lowerLevelData" :key="item.id" class="flexColAllWidthCls">
+					<div class="flexRowAllWidthCls">
+						<div class="flexRowCls" style="flex:1;">
+							{{item.nickName}}
+						</div>
+						<div class="flexRowCls" style="flex:1;">
+							￥{{item.totalCommission}}
+						</div>
+						<div class="flexRowCls" style="flex:2;">
+							{{item.updateTime}}
+						</div>
+					</div>
+					<div v-if="lowerLevelData.length > 1 && index < (lowerLevelData.length - 1)" class="underLineCls"></div>
+				</div>
+			</div>
+			<div v-else style="margin-top: 20px;color: #666666;">
+				暂无数据
+			</div>
+		</div>
 		<uni-load-more v-if="currentTab==0 && isShowOrderLoadingStatus" :status="loadingStatus"></uni-load-more>
 		<uni-load-more v-if="currentTab==1 && isShowCRLoadingStatus" :status="cashoutLoadingStatus"></uni-load-more>
+		<uni-load-more v-if="currentTab==2 && isShowLowerLevelDataLoadingStatus" :status="lowerLevelDataLoadingStatus"></uni-load-more>
 		<uni-popup ref="commissionRulePopup" type="dialog">
 			<uni-popup-dialog mode="base" title="佣金规则" :duration="2000" :before-close="true" @close="close" @confirm="close">
 				<div>
@@ -144,7 +165,7 @@
 
 <script>
 	import { getOrderList, getOnlyMyOrderList } from '@/api/orderApi';
-	import { getMyCommission, cashoutFunc, getCashOutRecordList } from '@/api/commissionApi';
+	import { getMyCommission, cashoutFunc, getCashOutRecordList, getLowerLevelData } from '@/api/commissionApi';
 	import { getBankCardInfo } from '@/api/bankCardApi';
 	import { getNonceStr } from '@/common/util';
 	export default{
@@ -153,8 +174,10 @@
 			return {
 				isShowCRLoadingStatus: false,
 				isShowOrderLoadingStatus: false,
+				isShowLowerLevelDataLoadingStatus: false,
 				loadingStatus: "more",
 				cashoutLoadingStatus: "more",
+				lowerLevelDataLoadingStatus: "more",
 				totalCommission: "0",
 				cashOutCommission: "0",
 				unCashOutCommission: "0",
@@ -166,8 +189,11 @@
 				orderPageNum: 1,
 				orderPageSize: 10,
 				commissionRecordList: [],
+				lowerLevelData: [],
 				cashPageNum: 1,
 				cashPageSize: 10,
+				lowerLevelPageNum: 1,
+				lowerLevelPageSize: 10,
 				commissionAmount: 0,
 				isCanCashOut: true
 			}
@@ -200,6 +226,8 @@
 			this.orderPageSize = 10;
 			this.cashPageNum = 1;
 			this.cashPageSize = 10;
+			this.lowerLevelPageNum = 1,
+			this.lowerLevelPageSize = 10,
 			this.getOnlyMyOrderList();
 			this.checkCurrentDate();
 		},
@@ -246,6 +274,34 @@
 					})
 				})
 			},
+			getLowerLevelData() {
+				getLowerLevelData({openId: this.currentOpenId, pageNum: this.lowerLevelPageNum, pageSize: this.lowerLevelPageSize}).then(data => {
+					if (data.data.code == 0) {
+						var resData = data.data.data;
+						if (resData && resData.length > 0) {
+							this.lowerLevelData = resData;
+							if (this.lowerLevelData.length < (this.lowerLevelPageNum * this.lowerLevelPageSize)) {
+								this.lowerLevelDataLoadingStatus = "noMore";
+							} else {
+								this.lowerLevelDataLoadingStatus = "more";
+								this.lowerLevelPageNum += 1;
+							}
+						} else {
+							this.lowerLevelDataLoadingStatus = "noMore";
+						}
+					} else {
+						wx.showToast({
+							title: data.data.msg,
+							icon: "none"
+						})
+					}
+				}).catch(err => {
+					wx.showToast({
+						title: "获取二级佣金列表失败，网络错误",
+						icon: "none"
+					})
+				})
+			},
 			sureBtnClick(){
 				var resNonceStr = getNonceStr(32);
 				if(this.commissionAmount){
@@ -271,7 +327,7 @@
 								this.commissionAmount = 0;
 								//执行提现
 								this.getMyCommission();
-								if(this.currentTab == 2){
+								if(this.currentTab == 1){
 									this.getCashOutRecordList();
 								}
 							}else{
@@ -340,8 +396,10 @@
 				this.currentTab = e.currentIndex;
 				if(this.currentTab == 0){
 					this.getOnlyMyOrderList();
-				}else{
+				}else if(this.currentTab == 1){
 					this.getCashOutRecordList();
+				}else {
+					this.getLowerLevelData();
 				}
 			},
 			getOnlyMyOrderList(){
@@ -409,5 +467,8 @@
 		height: 1px;
 		background-color: #f5f5f5;
 		margin: 5px 0;
+	}
+	.cashbtn {
+		font-size: 1.2rem;
 	}
 </style>

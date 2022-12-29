@@ -15,7 +15,7 @@
 		{
 			"path": "pages/home/index",
 			"style": {
-				"navigationBarTitleText": "首页",
+				"navigationBarTitleText": "DOU优选",
 				"onReachBottomDistance": 20
 			}
 		},
