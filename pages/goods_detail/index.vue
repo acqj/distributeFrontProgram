@@ -42,22 +42,25 @@
 				<div class="flexColCls" style="width: 90%;background-color: #fff;border-radius: 20px;margin-top: 30px;">
 					<div class="flexColCls" style="align-items: flex-start;color: #3d3d3d;font-size: 12px;width: 90%;margin: 20px 0;">
 						<div>
-							店铺名称：{{goodsObj.shopName}}
+							<span style="font-weight: bold;">店铺名称：</span>{{goodsObj.shopName}}
 						</div>
 						<div style="margin-top: 10px;">
-							商品评价：{{goodsObj.commentNum}}
+							<span style="font-weight: bold;">商品评价：</span>{{goodsObj.commentNum}}
 						</div>
 						<div style="margin-top: 10px;">
-							近30天商品总订单量：{{goodsObj.orderNum}}
+							<span style="font-weight: bold;">近30天商品总订单量：</span>{{goodsObj.orderNum}}
 						</div>
 						<div style="margin-top: 10px;">
-							近30天商品总浏览量：{{goodsObj.viewNum}}
+							<span style="font-weight: bold;">近30天商品总浏览量：</span>{{goodsObj.viewNum}}
 						</div>
 						<div style="margin-top: 10px;">
-							近30天推广总达人数：{{goodsObj.kolNum}}
+							<span style="font-weight: bold;">近30天推广总达人数：</span>{{goodsObj.kolNum}}
 						</div>
-						<div :style="bottomImgStyle">
+						<!-- <div :style="bottomImgStyle">
 							<image :src="goodsObj.cover" style="width: 100%;height: 95%;"></image>
+						</div> -->
+						<div v-for="item in goodsObj.imgs" :key="item" :style="bottomImgStyle">
+							<image :src="item" style="width: 100%;height: 95%;"></image>
 						</div>
 					</div>
 				</div>
