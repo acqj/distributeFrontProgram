@@ -3,7 +3,7 @@
 		<button class="avatar-wrapper" open-type="chooseAvatar" @chooseavatar="onChooseAvatar" style="height: 80px;width: 80px;border-radius: 40px;padding: 0;">
 			<image class="avatar" :src="currentAvatar" style="height: 80px;width: 80px;border-radius: 40px;"></image>
 		</button> 
-		<input type="nickname" v-model="currentNickName" class="weui-input" placeholder="请输入昵称" style="margin-top: 20px;border: 1px solid #666;height: 30px;width: 70%;"/>
+		<input type="nickname" v-model="currentNickName" class="weui-input" placeholder="请输入昵称" style="margin-top: 20px;border: 1px solid #666;height: 30px;width: 70%;text-align: center;"/>
 		<button @click="submitBtnClick" size="mini" type="warn" style="margin-top: 10px;">提交资料</button>
 	</div>
 </template>
