@@ -4,7 +4,7 @@
 			<div class="flexColAllWidthCls">
 				<div class="flexColCls" style="width: 90%;background-color: #fff;border-radius: 20px;">
 					<div id="imgTopDiv" class="flexColCls" style="margin: 20px 0;width: 90%;">
-						<swiper :indicator-dots="true" :style="swiperStyleStr">
+						<swiper :indicator-dots="true" :style="swiperStyleStr" autoplay="true">
 							<swiper-item v-for="item in goodsObj.imgs" :key="item">
 								<image :src="item" style="width: 100%;height: 90%;"></image>
 							</swiper-item>
@@ -28,19 +28,18 @@
 								{{goodsObj.onlyFirstCommission}}元
 							</div>
 						</div>
-						<div class="flexRowAllWidthCls" style="justify-content: flex-start;color: #3d3d3d;font-size: 12px;margin-top: 10px;">
+						<div class="flexRowAllWidthCls" style="justify-content: space-between;color: #3d3d3d;font-size: 12px;margin-top: 10px;">
 							<div>
-								库存：{{goodsObj.inStock}}
+								库存：{{goodsObj.inStock}} | 商品评分：{{goodsObj.score}}
 							</div>
-							<div style="height: 15px;width: 1px;margin: 0 10px;background-color: #3d3d3d;"></div>
 							<div>
-								商品评分：{{goodsObj.score}}
+								<button size="mini" type="primary" @click="copyNameBtnClick(goodsObj.title)">复制名称</button>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="flexColCls" style="width: 90%;background-color: #fff;border-radius: 20px;margin-top: 30px;">
-					<div class="flexColCls" style="align-items: flex-start;color: #3d3d3d;font-size: 12px;width: 90%;margin: 20px 0;">
+					<div class="flexColCls" style="align-items: flex-start;color: #3d3d3d;font-size: 14px;width: 90%;margin: 20px 0;">
 						<div>
 							<span style="font-weight: bold;">店铺名称：</span>{{goodsObj.shopName}}
 						</div>
@@ -59,8 +58,13 @@
 						<!-- <div :style="bottomImgStyle">
 							<image :src="goodsObj.cover" style="width: 100%;height: 95%;"></image>
 						</div> -->
-						<div v-for="item in goodsObj.imgs" :key="item" :style="bottomImgStyle">
-							<image :src="item" style="width: 100%;height: 95%;"></image>
+						<div v-for="item in goodsObj.imgs" :key="item" style="width: 100%;">
+							<div :style="bottomImgStyle">
+								<image :src="item" style="width: 100%;height: 95%;"></image>
+							</div>
+							<div style="width: 100%; text-align: center;">
+								<button size="mini" type="primary" @click="saveImgBtnClick(item)">保存图片</button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -180,6 +184,49 @@
 						})
 					}
 				}
+			},
+			async copyNameBtnClick(title) {
+				uni.setClipboardData({
+					data: title,
+					success(res) {
+						wx.showToast({
+							title: "商品名称已成功复制",
+							icon: "none",
+							duration: 2000
+						})
+					},
+					fail() {
+						wx.showToast({
+							title: "复制失败：" + title,
+							icon: "none",
+							duration: 2000
+						})
+					}
+				})
+			},
+			async saveImgBtnClick(url) {
+				uni.downloadFile({
+					url: url,
+					success: (res) => {
+						uni.saveImageToPhotosAlbum({
+							filePath: res.tempFilePath,
+							success: (res) => {
+								wx.showToast({
+									title: "图片保存成功",
+									icon: "none",
+									duration: 2000
+								})
+							}
+						})
+					},
+					fail() {
+						wx.showToast({
+							title: "图片保存失败",
+							icon: "none",
+							duration: 2000
+						})
+					}
+				})
 			},
 			getProductPwd(productId){
 				getProductPwdForDy({productId: productId, currentUserId: this.$store.state.currentUserInfo.id}).then(data => {

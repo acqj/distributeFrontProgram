@@ -40,8 +40,8 @@
 					<div style="flex:1;"></div>
 					<div class="flexRowCls">
 						<div>
-							<button class="cashbtn" v-if="isCanCashOut" type="warn" size="normal" @click="cashoutBtnClick">去提现</button>
-							<button class="cashbtn" v-else type="warn" size="normal" :disabled="true">去提现</button>
+							<button class="cashbtn" v-if="isCanCashOut" type="warn" size="mini" @click="cashoutBtnClick">去提现</button>
+							<button class="cashbtn" v-else type="warn" size="mini" :disabled="true">去提现</button>
 						</div>
 					</div>
 				</div>
