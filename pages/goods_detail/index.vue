@@ -9,7 +9,7 @@
 								<image :src="item" style="width: 100%;height: 90%;"></image>
 							</swiper-item>
 						</swiper>
-						<div style="color: #3d3d3d;font-size: 14px;font-weight: 700;margin-top: 10px;">
+						<div style="color: #3d3d3d;font-size: 16px;font-weight: 700;margin-top: 10px;">
 							{{goodsObj.title}}
 						</div>
 						<div class="flexRowAllWidthCls" style="margin-top: 20px;">
@@ -28,12 +28,9 @@
 								{{goodsObj.onlyFirstCommission}}元
 							</div>
 						</div>
-						<div class="flexRowAllWidthCls" style="justify-content: space-between;color: #3d3d3d;font-size: 12px;margin-top: 10px;">
+						<div class="flexRowAllWidthCls" style="justify-content: flex-start;color: #3d3d3d;font-size: 12px;margin-top: 10px;">
 							<div>
 								库存：{{goodsObj.inStock}} | 商品评分：{{goodsObj.score}}
-							</div>
-							<div>
-								<button size="mini" type="primary" @click="copyNameBtnClick(goodsObj.title)">复制名称</button>
 							</div>
 						</div>
 					</div>
@@ -71,6 +68,9 @@
 			</div>
 		</scroll-view>
 		<div class="flexRowAllWidthCls" style="margin-top: 5%;height: 8%;background-color: #fff;justify-content: flex-end;">
+			<div style="margin-right: 20px;">
+				<button size="mini" type="primary" @click="copyNameBtnClick(goodsObj.title)">复制名称</button>
+			</div>
 			<div style="margin-right: 20px;">
 				<button size="mini" type="warn" @click="shareBtnClick(goodsObj.id)">分享赚钱</button>
 			</div>
@@ -204,7 +204,7 @@
 					}
 				})
 			},
-			async saveImgBtnClick(url) {
+			downloadFile(url) {
 				uni.downloadFile({
 					url: url,
 					success: (res) => {
@@ -219,13 +219,58 @@
 							}
 						})
 					},
-					fail() {
+					fail: (res) => {
+						console.log("保存失败", res);
+						uni.setClipboardData({
+							data: res.errMsg + " - " + url,
+							success(res) {
+							}
+						})
 						wx.showToast({
 							title: "图片保存失败",
 							icon: "none",
 							duration: 2000
 						})
 					}
+				})
+			},
+			async saveImgBtnClick(url) {
+				// 获取相册权限设置
+				uni.getSetting({
+					success: (res) => {
+						console.log(res.authSetting["scope.writePhotosAlbum"]);
+						if (!res.authSetting["scope.writePhotosAlbum"]) {
+							// 如果没有权限，向用户发起授权请求
+							uni.authorize({
+								scope: "scope.writePhotosAlbum",
+								success: () => {
+									this.downloadFile(url);
+								},
+								fail: () => {
+									wx.showModal({
+										title: "您已拒绝获取相册权限",
+										content: "是否进入权限管理，调整授权？",
+										success: (res) => {
+											if (res.confirm) {
+												uni.openSetting({
+													success: (res) => {
+														console.log(res.authSetting);
+													}
+												});
+											}
+											else if (res.cancel) {
+												console.log("已取消");
+											}
+										}
+									})
+								}
+							})
+						}
+						else {
+							this.downloadFile(url);
+						}
+					},
+					fail: (res) => {}
 				})
 			},
 			getProductPwd(productId){
