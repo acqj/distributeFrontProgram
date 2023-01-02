@@ -1,7 +1,12 @@
 <template>
 	<div class="flexColAllWidthCls" style="justify-content: flex-start;">
 		<div style="position: relative;">
-			<image :src="avatar" style="height: 80px;width: 80px;border-radius: 40px;"></image>
+			<div @click="gotoUserInfo" style="background-color: #fff;width: 80px;height: 80px;border-radius: 40px;position: relative;text-align: center;line-height: 80px;">
+				<!-- <div @click="gotoUserInfo" style="z-index: 3;background-color: #fff;width: 80px;height: 80px;border-radius: 40px;position: absolute;top:0;left:0;text-align: center;line-height: 80px;"> -->
+					点击授权
+				<!-- </div> -->
+				<image :src="avatar" style="height: 80px;width: 80px;border-radius: 40px;position: absolute;top: 0;left: 0;"></image>
+			</div>
 			<!-- <button @click="getAuthClick">授权登录</button> -->
 			<div v-if="!isAuth" @click="gotoUserInfo" size="mini" style="text-align: center;width: 80px;position: absolute;top: 35%;background-color: limegreen;color: #fff;">完善信息</div>
 		</div>
@@ -89,8 +94,10 @@
 		},
 		onShareAppMessage(e) {
 			return {
-				title: "分享邀请",
-				path: 'pages/home/index?shareFromOpenId=' + this.$store.state.openId
+				title: "自购省钱，分销赚钱，快来吧！",
+				path: '/pages/home/index?shareFromOpenId=' + this.$store.state.openId,
+				imageUrl: "/static/shareImg.png"
+				// imageUrl: "https://ossweb-img.qq.com/images/lol/web201310/skin/big10002.jpg"
 			}
 		},
 		onShow() {
@@ -104,6 +111,7 @@
 		methods: {
 			...mapActions(['getUserOpenId', 'createUser', 'getUserInfo']),
 			gotoUserInfo(){
+				console.log('zzzzzindex');
 				uni.navigateTo({
 					url:"/pages/userInfo/index"
 				})
